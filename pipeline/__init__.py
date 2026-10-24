@@ -1,5 +1,5 @@
 """
-PitchPulse Python Core Analytics & CV Pipeline
+Football strategist Python Core Analytics & CV Pipeline
 """
 from .homography import PitchHomography
 from .offside import check_offside

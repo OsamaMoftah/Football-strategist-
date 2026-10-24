@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Jost, Karla } from "next/font/google";
 import "./globals.css";
+import "./werkstatt.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const display = Jost({
+  variable: "--font-jost",
+  weight: "700",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const body = Karla({
+  variable: "--font-karla",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "PitchPulse — Tactical Match Intelligence Console",
-  description: "Computer vision and optical tracking for professional football match analytics.",
+  title: "Football strategist — Football strategy analysis",
+  description:
+    "Review football match clips, explore tactical patterns, and build a focused analyst review.",
 };
 
 export default function RootLayout({
@@ -23,10 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${display.variable} ${body.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

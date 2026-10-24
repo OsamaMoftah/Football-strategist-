@@ -1,55 +1,53 @@
 "use client";
 
-import React from "react";
-
 interface TelemetryBarProps {
   clockTime: string;
   ballSpeedKmh: number;
-  homographyErrorPx: number;
   offsideMarginCm: number;
+  playerCount: number;
+  videoCalibrated: boolean;
 }
 
 export function TelemetryBar({
   clockTime,
   ballSpeedKmh,
-  homographyErrorPx,
-  offsideMarginCm
+  offsideMarginCm,
+  playerCount,
+  videoCalibrated,
 }: TelemetryBarProps) {
   const isOnside = offsideMarginCm >= 0;
 
   return (
-    <div className="h-10 bg-white border-b border-gray-200 px-5 flex items-center justify-between text-xs font-mono text-gray-500 shrink-0 tnum">
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
-          <span className="font-medium text-gray-900">Tracking Active (22/22)</span>
-        </div>
-        <div className="flex items-center gap-2 text-gray-500">
-          <span>Match:</span>
-          <span className="font-medium text-gray-900 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
-            Man City 2–1 Real Madrid
+    <section aria-label="Current sample telemetry" className="telemetry-bar">
+      <div className="telemetry-bar__inner">
+        <div className="telemetry-origin">
+          <span className="status-chip">
+            <i className="status-chip__dot" />
+            Synthetic sample · {playerCount} players
           </span>
-          <span className="text-gray-300">·</span>
-          <span>{clockTime}</span>
+          <span className="sample-clock">{clockTime}</span>
         </div>
-      </div>
 
-      <div className="hidden sm:flex items-center gap-6">
-        <div>
-          Ball Speed: <span className="font-medium text-gray-900">{ballSpeedKmh.toFixed(1)} km/h</span>
-        </div>
-        <div className="text-gray-300">·</div>
-        <div>
-          Homography Reprojection: <span className="font-medium text-emerald-700">{homographyErrorPx.toFixed(1)} px</span>
-        </div>
-        <div className="text-gray-300">·</div>
-        <div>
-          VAR Margin:{" "}
-          <span className={`font-medium ${isOnside ? "text-emerald-700" : "text-rose-600"}`}>
-            {isOnside ? `+${offsideMarginCm.toFixed(1)} cm (Onside)` : `${offsideMarginCm.toFixed(1)} cm (Offside)`}
-          </span>
-        </div>
+        <dl className="telemetry-stat">
+          <dt>Ball speed</dt>
+          <dd>
+            {ballSpeedKmh.toFixed(1)} <small>km/h</small>
+          </dd>
+        </dl>
+        <dl className="telemetry-stat">
+          <dt>Offside geometry</dt>
+          <dd className={isOnside ? "is-positive" : "is-negative"}>
+            {offsideMarginCm > 0 ? "+" : ""}
+            {offsideMarginCm.toFixed(1)} <small>cm</small>
+          </dd>
+        </dl>
+        <dl className="telemetry-stat">
+          <dt>Video alignment</dt>
+          <dd className={videoCalibrated ? "is-positive" : "is-unavailable"}>
+            {videoCalibrated ? "Calibrated" : "Not available"}
+          </dd>
+        </dl>
       </div>
-    </div>
+    </section>
   );
 }

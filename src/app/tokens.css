@@ -1,0 +1,73 @@
+:root {
+  --color-paper: oklch(98.2% 0.003 265);
+  --color-surface: oklch(100% 0 0);
+  --color-surface-muted: oklch(96.2% 0.004 265);
+  --color-ink: oklch(20% 0.014 270);
+  --color-muted: oklch(51% 0.014 270);
+  --color-border: oklch(90.5% 0.006 270);
+  --color-border-strong: oklch(83% 0.009 270);
+  --color-muted-strong: oklch(38% 0.016 270);
+  --color-green: oklch(39% 0.07 151);
+  --color-green-deep: oklch(32% 0.065 151);
+  --color-green-soft: oklch(94.5% 0.022 151);
+  --color-blue: oklch(52% 0.2 263);
+  --color-blue-deep: oklch(43% 0.19 263);
+  --color-blue-soft: oklch(95% 0.035 263);
+  --color-amber: oklch(68% 0.12 69);
+  --color-red: oklch(59% 0.16 25);
+  --color-danger-soft: oklch(96% 0.025 25);
+  --color-warning-soft: oklch(96% 0.032 87);
+  --color-pitch: oklch(35% 0.072 153);
+  --color-pitch-stripe: oklch(39% 0.074 153);
+  --color-pitch-border: oklch(28% 0.055 153);
+  --color-pitch-line: oklch(88% 0.016 151);
+  --color-focus: oklch(52% 0.2 263);
+  --color-video-line: oklch(75% 0.012 270 / 0.15);
+  --color-white-06: oklch(100% 0 0 / 0.06);
+  --color-white-08: oklch(100% 0 0 / 0.08);
+  --color-white-14: oklch(100% 0 0 / 0.14);
+  --color-white-20: oklch(100% 0 0 / 0.2);
+  --color-white-24: oklch(100% 0 0 / 0.24);
+  --color-white-42: oklch(100% 0 0 / 0.42);
+  --color-white-92: oklch(100% 0 0 / 0.92);
+  --color-black-09: oklch(20% 0.03 270 / 0.09);
+  --color-black-22: oklch(18% 0.03 270 / 0.22);
+  --color-black-40: oklch(20% 0.03 270 / 0.4);
+  --color-black-68: oklch(18% 0.03 270 / 0.68);
+  --color-black-84: oklch(20% 0.02 270 / 0.84);
+  --color-black-025: oklch(20% 0.03 270 / 0.025);
+  --color-black-035: oklch(20% 0.03 270 / 0.035);
+  --color-red-soft-text: oklch(83% 0.08 25);
+  --color-red-muted-text: oklch(79% 0.015 248);
+  --color-white-muted-icon: oklch(82% 0.01 248);
+  --color-red-soft-border: oklch(84% 0.06 25);
+  --color-green-soft-border: oklch(84% 0.05 150);
+  --color-amber-soft-border: oklch(84% 0.06 83);
+
+  --font-display: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-data: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-short: 160ms;
+  --dur-medium: 240ms;
+
+  --radius-card: 14px;
+  --radius-input: 9px;
+  --radius-pill: 999px;
+  --shadow-panel: 0 1px 2px oklch(20% 0.02 270 / 0.035), 0 12px 34px oklch(20% 0.02 270 / 0.035);
+}

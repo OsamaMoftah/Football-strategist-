@@ -1,73 +1,85 @@
 "use client";
 
-import React from "react";
+const stages = [
+  {
+    stage: "Local clip inference",
+    state: "Available",
+    detail: "RF-DETR Nano COCO detects people and sports-ball candidates in sampled video frames",
+    gap: "Browser inference is sampled at 3 fps; not a benchmarked accuracy claim",
+  },
+  {
+    stage: "Image-space tracks",
+    state: "Available",
+    detail: "Timestamped boxes with short-term IoU and position-proximity track IDs",
+    gap: "IDs can switch at cuts or occlusions; no team or shirt identity",
+  },
+  {
+    stage: "Pitch homography",
+    state: "Geometry helper",
+    detail: "Generic DLT accepts four or more point pairs",
+    gap: "No clip-specific calibration or reprojection-error report",
+  },
+  {
+    stage: "Offside geometry",
+    state: "Unavailable",
+    detail: "No metric player coordinates are produced for uploaded clips",
+    gap: "Needs calibrated pitch, kick-time detection, body-part review, and uncertainty bounds",
+  },
+  {
+    stage: "Territory and threat",
+    state: "Sample only",
+    detail: "Illustrative synthetic territory and threat values in the demo workspace",
+    gap: "Not computed from the uploaded footage or validated as pitch-control / xT",
+  },
+];
 
 export function BenchmarksTable() {
-  const benchmarks = [
-    {
-      stage: "Ball Tracking",
-      architecture: "WASB Temporal Heatmaps + Kalman Gate",
-      accuracy: "92.4% Recall",
-      source: "78 broadcast clips (1080p 50fps)",
-      failureMode: "Crowded 6-yard box scuffles"
-    },
-    {
-      stage: "Player Detection",
-      architecture: "YOLO11x-Seg + ByteTrack",
-      accuracy: "96.8% Persistence",
-      source: "Corner kick & counter-attack passages",
-      failureMode: "Celebration huddles after goals"
-    },
-    {
-      stage: "Pitch Homography",
-      architecture: "18-Keypoint Sub-pixel Line Fit",
-      accuracy: "1.2 px Error",
-      source: "FIFA 105m×68m standard markings",
-      failureMode: "Fewer than 4 visible pitch lines"
-    },
-    {
-      stage: "VAR Offside Margin",
-      architecture: "Epipolar projection to defender boot",
-      accuracy: "±4.2 cm Error",
-      source: "Official broadcast VAR freeze-frames",
-      failureMode: "Defender boot occluded by attacker"
-    }
-  ];
-
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-xs space-y-4">
-      <div className="flex items-center justify-between pb-3 border-b border-gray-200 text-xs">
-        <div>
-          <h2 className="font-semibold text-gray-900 text-sm">Empirical Ground-Truth Benchmarks</h2>
-          <p className="text-gray-500 text-xs mt-0.5">Tested against broadcast freeze-frames and manual annotations.</p>
+    <section className="panel view-panel" aria-labelledby="pipeline-title">
+      <div className="view-panel__intro">
+        <div className="pipeline-intro">
+          <h1 id="pipeline-title" className="view-panel__title">
+            Pipeline status
+          </h1>
+          <p className="view-panel__description">
+            The browser runs the detector on uploaded video. Spatial metrics remain available only
+            in the illustrative sample workspace.
+          </p>
         </div>
-        <div className="text-gray-500 font-mono text-[11px]">142 match clips tested</div>
+        <span className="pipeline-tag">Research prototype</span>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs font-mono tnum">
-          <thead className="text-gray-500 border-b border-gray-200">
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
             <tr>
-              <th className="pb-2 font-medium">Stage</th>
-              <th className="pb-2 font-medium">Architecture</th>
-              <th className="pb-2 font-medium">Accuracy</th>
-              <th className="pb-2 font-medium">Validation Source</th>
-              <th className="pb-2 font-medium">Known Failure Mode</th>
+              <th scope="col">Stage</th>
+              <th scope="col">Status</th>
+              <th scope="col">Available now</th>
+              <th scope="col">Evidence needed</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 text-gray-900">
-            {benchmarks.map((row, idx) => (
-              <tr key={idx} className="hover:bg-gray-50/50">
-                <td className="py-2.5 font-medium">{row.stage}</td>
-                <td className="py-2.5 text-gray-500">{row.architecture}</td>
-                <td className="py-2.5 text-emerald-700 font-semibold">{row.accuracy}</td>
-                <td className="py-2.5 text-gray-500">{row.source}</td>
-                <td className="py-2.5 text-gray-400">{row.failureMode}</td>
+          <tbody>
+            {stages.map((row) => (
+              <tr key={row.stage}>
+                <td className="row-title">{row.stage}</td>
+                <td>
+                  <span className="state-text">{row.state}</span>
+                </td>
+                <td>{row.detail}</td>
+                <td className="state-muted">{row.gap}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+      <div className="data-quality">
+        <span>Validation status</span>
+        <span>
+          No labeled-footage accuracy benchmark yet. See the analysis panel for measured clip
+          coverage and limitations.
+        </span>
+      </div>
+    </section>
   );
 }

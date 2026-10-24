@@ -1,76 +1,105 @@
-# PitchPulse — Tactical Match Intelligence Console
-
-PitchPulse is a computer vision and optical match intelligence console that turns standard football broadcast feeds into sub-pixel 2D tactical radars, Voronoi pitch dominance metrics, and VAR-calibrated offside margins.
-
-Designed with a restrained, studio-grade aesthetic (Linear / Mobbin / Hudl Pro level).
-
+---
+title: Football strategist
+emoji: ⚽
+colorFrom: blue
+colorTo: gray
+sdk: docker
+app_port: 7860
+fullWidth: true
+short_description: On-device football video review with ball tracking and evidence-linked sequence cues.
+license: mit
+models:
+  - onnx-community/rfdetr_nano-ONNX
+  - build-small-hackathon/futheros-ball-rfdetr
 ---
 
-## Architecture
+# Football strategist
 
-- **Front-End Studio**: Next.js 15 (App Router), TypeScript, Tailwind CSS, Lucide icons.
-- **In-Browser Overlay**: Synchronized 60 FPS HTML5 Canvas engine rendering player bounding boxes, neon comet ball trajectory, and perspective VAR offside plane over live video.
-- **2D Metric Pitch Radar**: 105m × 68m FIFA pitch schematic with true metric homography projection, Voronoi territory control polygons, and pass vector tracking.
-- **Python CV Pipeline (`/pipeline`)**:
-  - `homography.py`: 18-keypoint Direct Linear Transformation (DLT) with SVD for sub-pixel pitch reprojection.
-  - `offside.py`: Epipolar offside boundary line computation with calibrated margin in cm.
-  - `metrics.py`: Instantaneous speeds (km/h), distance covered, Voronoi dominance %, and Expected Threat (xT) generation.
+[![CI](https://github.com/OsamaMoftah/Football-strategist-/actions/workflows/ci.yml/badge.svg)](https://github.com/OsamaMoftah/Football-strategist-/actions/workflows/ci.yml)
+[![Code license: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
 
----
+Review a football clip, follow the ball, and turn measured observations into a focused coaching review. Inference runs on the viewer's device. The app connects video playback, an annotated overlay, a ball magnifier, sequence explanations and downloadable evidence.
 
-## Quickstart
+**[Open the live demo](https://football-strategist.vercel.app/)** · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md) · [Deployment](docs/DEPLOYMENT.md) · [Model and media licenses](THIRD_PARTY_NOTICES.md)
 
-### 1. Web Studio (Next.js)
+![Video review with a synchronized ball trace and source-pixel magnifier](docs/evidence/ball-motion/live-review.jpg)
+
+## Try the case
+
+1. Choose **Try motion demo** to open a licensed goal sequence with genuine, saved model observations immediately.
+2. Play or scrub the footage. The cobalt trace, yellow ball marker and magnifier follow the video clock.
+3. Open **Readout**, **Ball trace** or **Teams**. Each sequence cue includes a timestamp, supporting observations and a coaching question.
+4. Choose **Analyze again** to run inference locally, or upload your own MP4/WebM. Use **Correct ball** to supply an explicitly labeled manual anchor.
+5. Export the annotated silent video, tracking JSON or written findings. Select a strategy lens to guide the human review.
+
+The included goal clip is a narrow, low-resolution stadium recording. It deliberately exposes unresolved-ball gaps rather than hiding them. For your own case, use a 5–15-second uninterrupted wide view with a visible ball and distinct kit colors. The technical limits are 60 seconds and 200 MB; longer clips can take several minutes.
+
+## What is implemented
+
+| Capability | Implementation |
+| --- | --- |
+| Player candidates | RF-DETR Nano COCO, full-frame plus four overlapping crops, 2 Hz |
+| Ball anchors | Separate football-specific RF-DETR Nano, ROI search and extra detector checks when appearance matching fails |
+| Ball movement | 12 Hz sampling with labeled detector/manual anchors, local appearance estimates and ≤0.2 s interpolation |
+| Continuity | Geometry gates, temporal association, shot-cut resets and split lost-ball segments |
+| Sequence cues | Sustained ball proximity, kit-color groups, conservative pressure/control-change prompts, camera-translation-adjusted movement |
+| Review | Media-clock overlay, pixel magnifier, precise scrubber, motion-sample stepping and timestamp links |
+| Delivery | Annotated silent video, schema-versioned tracking JSON and Markdown findings |
+| Privacy | File processing in a browser worker; no clip upload endpoint or analytics integration |
+
+The separate **synthetic pitch sample** demonstrates geometric telemetry with generated coordinates. It is clearly labeled and is never substituted for uploaded-video analysis.
+
+## Validation boundary
+
+This is a working analyst-assistance portfolio MVP, not a validated automated tactics or officiating system. Ball tracking can drift or fail, team colors can include officials, and proximity does not establish possession. The app withholds cues when evidence is insufficient. Formation recognition, calibrated speed, offside, territory and xT are **not computed from uploaded clips**.
+
+On the included 3.39-second clip, the saved browser run retained 14 ball detector anchors and 9 appearance estimates, yielding **1.7 seconds of continuous trace across two segments**. Processing took 90.1 seconds on the development machine. Those are single-clip continuity/runtime measurements, not precision, recall or general accuracy. See [the validation report](docs/VALIDATION.md) for protocol, evidence and remaining gates.
+
+## Run locally
+
+Requirements: Node.js 22 or 24 and pnpm 9.15.5. No API keys, paid inference service or GPU required.
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Run development server
+git clone https://github.com/OsamaMoftah/Football-strategist-.git
+cd Football-strategist-
+corepack enable
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
-
-To build for production:
+Open `http://localhost:3000`. Model files are included with notices and SHA-256 checksums; the build copies ONNX Runtime's WASM assets from the pinned package. The first inference session loads approximately 63 MB of models plus the runtime. Later visits can use browser caching. Network access is needed during build for Next.js font acquisition.
 
 ```bash
-pnpm build
-pnpm start
+pnpm verify                         # assets, formatting, types, lint, CV tests, production build
+python3.12 -m venv pipeline/.venv
+pipeline/.venv/bin/pip install -r pipeline/requirements.txt
+PYTHONPATH=. pipeline/.venv/bin/pytest pipeline/tests -q
 ```
 
-### 2. Python CV Pipeline & Tests
+Python modules are isolated geometry/math examples. They are not an active server inference backend. Browser inference supports current Chromium desktop browsers best; video recording depends on MediaRecorder support and requires the tab to stay visible. Mobile layout is tested separately from on-device mobile inference.
 
-```bash
-# Set up Python virtual environment
-cd pipeline
-uv venv .venv
-source .venv/bin/activate
-uv pip install numpy scipy pytest
+## Deploy
 
-# Run pipeline tests
-cd ..
-PYTHONPATH=. pipeline/.venv/bin/pytest pipeline/tests
+Vercel: import this repository, use `pnpm build`, and retain the default Next.js settings.
 
-# Generate sample match data
-PYTHONPATH=. pipeline/.venv/bin/python pipeline/process_match.py
+Hugging Face: this repository includes Docker Space metadata and a non-root, port-7860 Dockerfile. See [deployment instructions](docs/DEPLOYMENT.md). Hugging Face publication is not automatic and has not been claimed as live.
+
+## Project layout
+
+```text
+src/app/                  Application state, fonts and Werkstatt design system
+src/components/           Review, sequence intelligence, findings and strategy views
+src/lib/cv/               Worker inference, ball association, appearance, cues and export
+src/lib/cv/tests/         Deterministic behavioral tests
+public/models/            Licensed ONNX models and provenance
+public/demo/              Licensed footage and genuine saved observations
+pipeline/                 Geometry examples and optional model export tooling
+docs/                     Architecture, validation and deployment guides
+.github/workflows/        Web/Python checks and container smoke test
 ```
 
----
+## Commercial use and license
 
-## Model Benchmarks & Validation
+Original application code is [MIT licensed](LICENSE), including commercial reuse with preservation of the notice. **Model weights, runtime files and photographs/footage keep their own licenses**; see [third-party notices](THIRD_PARTY_NOTICES.md). The included Wikimedia video and annotated derivatives are CC BY-SA 4.0. Use footage you have permission to process and distribute.
 
-| Pipeline Stage | Model Architecture | Empirical Accuracy | Ground Truth Source | Known Failure Mode |
-|---|---|---|---|---|
-| Ball Tracking | WASB Temporal Heatmaps + Kalman Gate | 92.4% Recall | 78 broadcast clips (1080p 50fps) | Crowded 6-yard box scuffles |
-| Player Detection | YOLO11x-Seg + ByteTrack | 96.8% Persistence | Corner kick & counter-attack passages | Celebration huddles after goals |
-| Pitch Homography | 18-Keypoint Sub-pixel Line Fit | 1.2 px Error | FIFA 105m×68m standard markings | Fewer than 4 visible pitch lines |
-| VAR Offside Margin | Epipolar projection to defender boot | ±4.2 cm Error | Official broadcast VAR freeze-frames | Defender boot occluded by attacker |
-
----
-
-## Deliverables & Exports
-
-- **Full 2D Tracking Coordinates (`.json`)**: Frame-by-frame 22 players + ball coordinates in metric space.
-- **Tactical Event Stream (`.csv`)**: Line-breaking passes, sprint peaks, and xT contributions.
-- **Annotated Broadcast MP4**: Video rendered with sub-pixel overlays and ball tracer.
+Commercial deployment still needs representative labeled-footage evaluation, a target-device performance budget and human review appropriate to the intended workflow. See [the operational readiness checklist](docs/VALIDATION.md#before-commercial-operation). No accuracy, officiating, regulatory or commercial-readiness certification is implied.

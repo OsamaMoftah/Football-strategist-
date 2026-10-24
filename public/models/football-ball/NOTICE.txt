@@ -1,0 +1,12 @@
+Football strategist football ball detector
+Source: https://huggingface.co/build-small-hackathon/futheros-ball-rfdetr
+Source revision: d4dfe1076a9ef09d5326c30997d03926974ea757
+Checkpoint: checkpoint_best_total.pth (the published checkpoint; no v2 accuracy claims)
+License: Apache-2.0, see LICENSE.txt.
+Export: rfdetr 1.11.2 RFDETRNano.from_checkpoint, resolution 384, torch.onnx opset17.
+Quantization: ONNX Runtime dynamic MatMul-only per-channel QUInt8.
+Input: RGB, 384x384, /255, ImageNet mean/std.
+Output: dets (cxcywh), labels (logits), foreground classes 0 and 1.
+SHA256: e20ef0b13504eae4eab770bfcc7593110ca279914f186aeb2ae6df9b4729a9ae
+
+This is a separate model from the COCO person detector. Model scores are not accuracy.

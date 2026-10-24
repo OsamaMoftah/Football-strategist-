@@ -1,143 +1,177 @@
 "use client";
 
-import React from "react";
+import type { InterpolatedFrame } from "@/lib/match-data";
 
 interface PitchRadarProps {
-  offsideLineX?: number;
-  haalandSpeed?: number;
-  pitchDominancePct?: number;
+  frame: InterpolatedFrame;
+  territoryShare: number;
+  spatialThreatGain: number;
+  compact?: boolean;
 }
 
+const pitchX = (x: number) => 20 + (x / 105) * 480;
+const pitchY = (y: number) => 20 + (y / 68) * 300;
+
 export function PitchRadar({
-  offsideLineX = 32.4,
-  haalandSpeed = 34.8,
-  pitchDominancePct = 58.4
+  frame,
+  territoryShare,
+  spatialThreatGain,
+  compact = false,
 }: PitchRadarProps) {
+  const homeRunner = frame.players.find((player) => player.team === "home" && player.num === 9);
+  const lineX = pitchX(frame.offside.offside_line_x);
+  const margin = `${frame.offside.margin_cm > 0 ? "+" : ""}${frame.offside.margin_cm.toFixed(1)} cm`;
+
   return (
-    <div className="flex flex-col gap-5">
-      
-      {/* 2D Tactical Pitch Radar Card */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-xs flex flex-col">
-        <div className="flex items-center justify-between pb-3 border-b border-gray-200 text-xs">
-          <div className="flex items-center gap-2 font-semibold text-gray-900">
-            <span>2D Tactical Radar</span>
-            <span className="text-gray-300">·</span>
-            <span className="text-gray-500 font-normal">105m × 68m Metric Pitch</span>
-          </div>
-          <div className="flex items-center gap-1.5 font-mono text-[11px] text-gray-500">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-sky-400"></span> City</span>
-            <span className="flex items-center gap-1 ml-2"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Real</span>
+    <section
+      className={`panel pitch-panel ${compact ? "pitch-panel--compact" : ""}`}
+      aria-labelledby="radar-title"
+    >
+      <div className="panel-heading">
+        <div>
+          <h2 id="radar-title" className="panel-heading__title">
+            {compact ? "Player positions" : "Metric pitch"}
+          </h2>
+          <p className="panel-heading__description">
+            {compact
+              ? "Synthetic sample · 105 × 68 m"
+              : "105 × 68 m · interpolated from the sample sequence"}
+          </p>
+        </div>
+        <div className="panel-heading__aside">
+          <div className="team-legend" aria-label="Pitch legend">
+            <span className="team-legend__item">
+              <i className="legend-mark" />
+              Home
+            </span>
+            <span className="team-legend__item">
+              <i className="legend-mark legend-mark--away" />
+              Away
+            </span>
+            <span className="team-legend__item">
+              <i className="legend-mark legend-mark--ball" />
+              Ball
+            </span>
+            <span className="team-legend__item">
+              <i className="legend-mark legend-mark--line" />
+              Line
+            </span>
           </div>
         </div>
+      </div>
 
-        {/* Tactical Pitch Canvas */}
-        <div className="relative aspect-[4/3] rounded-lg mt-3 overflow-hidden border border-emerald-950/20 bg-[#1A3326] flex items-center justify-center p-2">
-          <svg className="w-full h-full" viewBox="0 0 520 340">
-            {/* Turf Mowing Stripes */}
-            <rect x="0" y="0" width="520" height="340" fill="#1A3326" />
-            <rect x="65" y="0" width="65" height="340" fill="#152B20" />
-            <rect x="195" y="0" width="65" height="340" fill="#152B20" />
-            <rect x="325" y="0" width="65" height="340" fill="#152B20" />
-            <rect x="455" y="0" width="65" height="340" fill="#152B20" />
+      <div className="pitch-panel__body">
+        <div className="pitch-surface">
+          <svg
+            className="pitch-svg"
+            viewBox="0 0 520 340"
+            role="img"
+            aria-labelledby="pitch-title pitch-desc"
+          >
+            <title id="pitch-title">Synthetic sample tracking on a metric football pitch</title>
+            <desc id="pitch-desc">
+              Twenty-two player positions, the ball, and a geometric offside line at{" "}
+              {frame.offside.offside_line_x.toFixed(1)} meters.
+            </desc>
+            <defs>
+              <clipPath id="pitch-clip">
+                <rect x="20" y="20" width="480" height="300" rx="1" />
+              </clipPath>
+            </defs>
+            <rect x="20" y="20" width="480" height="300" fill="var(--pitch)" />
+            <g className="pitch-stripes" clipPath="url(#pitch-clip)">
+              {[0, 1, 2, 3, 4].map((stripe) => (
+                <rect
+                  key={stripe}
+                  x={20 + stripe * 96}
+                  y="20"
+                  width="48"
+                  height="300"
+                  fill="var(--pitch-stripe)"
+                />
+              ))}
+            </g>
+            <g className="pitch-lines">
+              <rect x="20" y="20" width="480" height="300" />
+              <line x1="260" y1="20" x2="260" y2="320" />
+              <circle cx="260" cy="170" r="45" />
+              <circle className="pitch-center-mark" cx="260" cy="170" r="2" />
+              <rect x="20" y="80" width="80" height="180" />
+              <rect x="420" y="80" width="80" height="180" />
+              <rect x="20" y="120" width="30" height="100" />
+              <rect x="470" y="120" width="30" height="100" />
+            </g>
 
-            {/* Pitch Lines */}
-            <rect x="20" y="20" width="480" height="300" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" />
-            <line x1="260" y1="20" x2="260" y2="320" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" />
-            <circle cx="260" cy="170" r="45" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" />
-            <circle cx="260" cy="170" r="2.5" fill="#FFFFFF" />
+            <line className="offside-line" x1={lineX} y1="20" x2={lineX} y2="320" />
+            {frame.players.map((player) => (
+              <g
+                key={`${player.team}-${player.id}`}
+                transform={`translate(${pitchX(player.x)} ${pitchY(player.y)})`}
+              >
+                <circle
+                  className={`pitch-dot ${player.team === "home" ? "pitch-dot--home" : "pitch-dot--away"}`}
+                  r="8"
+                />
+                <text className="pitch-number" y="2.7">
+                  {player.num}
+                </text>
+              </g>
+            ))}
 
-            {/* Boxes */}
-            <rect x="20" y="80" width="80" height="180" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" />
-            <rect x="420" y="80" width="80" height="180" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" />
-
-            {/* Voronoi Pitch Control Polygon */}
-            <polygon
-              points="260,20 380,80 340,240 260,320"
-              fill="rgba(56, 189, 248, 0.12)"
-              stroke="rgba(56, 189, 248, 0.4)"
-              strokeWidth="1"
-              strokeDasharray="3,3"
+            <circle
+              className="ball-halo"
+              cx={pitchX(frame.ball.x)}
+              cy={pitchY(frame.ball.y)}
+              r="9"
             />
-
-            {/* Offside Line */}
-            <line x1="390" y1="20" x2="390" y2="320" stroke="#EF4444" strokeWidth="1.8" strokeDasharray="4,4" />
-            <text x="390" y="34" fill="#FFFFFF" fontSize="8" fontFamily="JetBrains Mono" fontWeight="bold" textAnchor="middle">
-              OFFSIDE LINE ({offsideLineX}m)
-            </text>
-
-            {/* Pass Trajectory Line */}
-            <line x1="250" y1="160" x2="375" y2="105" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
-
-            {/* Player Dots */}
-            {/* De Bruyne */}
-            <circle cx="250" cy="160" r="7" fill="#38BDF8" stroke="#FFFFFF" strokeWidth="1.5" />
-            <text x="250" y="163" fill="#000" fontSize="7" fontFamily="JetBrains Mono" fontWeight="bold" textAnchor="middle">17</text>
-
-            {/* Haaland */}
-            <circle cx="375" cy="105" r="7" fill="#38BDF8" stroke="#FFFFFF" strokeWidth="1.5" />
-            <text x="375" y="108" fill="#000" fontSize="7" fontFamily="JetBrains Mono" fontWeight="bold" textAnchor="middle">9</text>
-            <text x="375" y="94" fill="#FFFFFF" fontSize="8" fontFamily="Inter" fontWeight="600" textAnchor="middle">
-              Haaland {haalandSpeed.toFixed(1)} km/h
-            </text>
-
-            {/* Militão */}
-            <circle cx="390" cy="125" r="7" fill="#F43F5E" stroke="#FFFFFF" strokeWidth="1.5" />
-            <text x="390" y="128" fill="#FFF" fontSize="7" fontFamily="JetBrains Mono" fontWeight="bold" textAnchor="middle">3</text>
-
-            {/* Ball */}
-            <circle cx="305" cy="135" r="4.5" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="1.5" />
+            <circle
+              className="ball-mark"
+              cx={pitchX(frame.ball.x)}
+              cy={pitchY(frame.ball.y)}
+              r="4.5"
+            />
           </svg>
         </div>
 
-        {/* Telemetry Metrics Grid */}
-        <div className="mt-4 grid grid-cols-3 gap-3 text-xs font-mono tnum">
-          <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-            <span className="text-[10px] text-gray-500 block uppercase">Pitch Dominance</span>
-            <span className="text-base font-semibold text-gray-900 mt-0.5 block">{pitchDominancePct.toFixed(1)}%</span>
-            <span className="text-[10px] text-gray-500">Man City attacking half</span>
+        {!compact && (
+          <div className="pitch-caption">
+            <span>Home #9 speed · {homeRunner?.speed_kmh?.toFixed(1) ?? "—"} km/h</span>
+            <span className="pitch-caption__value">
+              {frame.players.length} players · {frame.timestamp.toFixed(2)} s
+            </span>
           </div>
+        )}
 
-          <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-            <span className="text-[10px] text-gray-500 block uppercase">Defensive Height</span>
-            <span className="text-base font-semibold text-gray-900 mt-0.5 block">34.2 m</span>
-            <span className="text-[10px] text-gray-500">Compactness: 24.8m</span>
+        {!compact && (
+          <div className="metric-strip" aria-label="Derived sample metrics">
+            <Metric
+              label="Home territory estimate"
+              value={`${territoryShare.toFixed(1)}%`}
+              note="Nearest-player grid"
+            />
+            <Metric
+              label="Offside margin"
+              value={margin}
+              note="Geometry only · not a VAR decision"
+            />
+            <Metric
+              label="Threat change"
+              value={`+${spatialThreatGain.toFixed(3)}`}
+              note="Distance-based proxy · uncalibrated"
+            />
           </div>
-
-          <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-            <span className="text-[10px] text-gray-500 block uppercase">Threat Value (xT)</span>
-            <span className="text-base font-semibold text-emerald-700 mt-0.5 block">+0.48</span>
-            <span className="text-[10px] text-emerald-700">Direct goal chance</span>
-          </div>
-        </div>
-
+        )}
       </div>
+    </section>
+  );
+}
 
-      {/* Optical Tracking Displacement */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-xs space-y-3">
-        <div className="flex items-center justify-between text-xs pb-2 border-b border-gray-200">
-          <span className="font-semibold text-gray-900">Optical Tracking Displacement</span>
-          <span className="text-gray-500 font-mono text-[11px]">Sub-pixel Homography</span>
-        </div>
-
-        <div className="space-y-2 text-xs font-mono tnum">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500">#9 E. Haaland (Top Sprint)</span>
-            <span className="font-semibold text-gray-900">{haalandSpeed.toFixed(1)} km/h</span>
-          </div>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
-            <div className="h-full bg-gray-900 w-[90%] rounded-full"></div>
-          </div>
-
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-gray-500">#17 K. De Bruyne (Distance Covered)</span>
-            <span className="font-semibold text-gray-900">8.42 km</span>
-          </div>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
-            <div className="h-full bg-gray-400 w-[74%] rounded-full"></div>
-          </div>
-        </div>
-      </div>
-
+function Metric({ label, value, note }: { label: string; value: string; note: string }) {
+  return (
+    <div className="metric-cell">
+      <p className="metric-label">{label}</p>
+      <p className="metric-value">{value}</p>
+      <p className="metric-note">{note}</p>
     </div>
   );
 }

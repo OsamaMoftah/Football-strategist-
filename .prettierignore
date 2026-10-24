@@ -1,0 +1,8 @@
+.next
+node_modules
+public
+pipeline
+pnpm-lock.yaml
+design-artifacts
+.hallmark
+docs/evidence

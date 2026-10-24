@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a reproducible review or inference failure.
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, OS and device
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps and timestamps
+      description: Share a rights-cleared example or source hash. Do not upload private/customer footage.
+    validations:
+      required: true

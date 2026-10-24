@@ -1,0 +1,13 @@
+.git
+.github
+.next
+node_modules
+pipeline
+docs
+design-artifacts
+.hallmark
+.vercel
+.env*
+*.html
+public/ort/*.wasm
+public/ort/*.mjs
