@@ -112,3 +112,20 @@ test("proxy rejects cross-origin mutation and path injection before contacting b
     503,
   );
 });
+
+test("an explicitly configured public origin works behind a reverse proxy", async () => {
+  const request = new Request("http://0.0.0.0:7860/api/native/health", {
+    headers: { Origin: "https://demo.hf.space" },
+  });
+  assert.equal(
+    (await forwardNative(request, ["health"], undefined, "https://demo.hf.space")).status,
+    503,
+  );
+  const cross = new Request("http://0.0.0.0:7860/api/native/health", {
+    headers: { Origin: "https://other.test" },
+  });
+  assert.equal(
+    (await forwardNative(cross, ["health"], undefined, "https://demo.hf.space")).status,
+    403,
+  );
+});

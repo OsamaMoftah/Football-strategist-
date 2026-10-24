@@ -24,7 +24,7 @@ The default remains **On this device**, which sends no clip to the server. Selec
 | GET | `/api/native/jobs/{id}/result` | Private completed AnalysisResult JSON |
 | DELETE | `/api/native/jobs/{id}` | Terminate processing and remove temporary files |
 
-Next.js streams a fixed route allowlist to `NATIVE_API_URL`, configured by the operator and never by the client. The Docker image uses `http://127.0.0.1:8000`; Uvicorn is not exposed publicly. Cross-origin browser requests are rejected. The public port is 7860.
+Next.js streams a fixed route allowlist to `NATIVE_API_URL`, configured by the operator and never by the client. The Docker image uses `http://127.0.0.1:8000`; Uvicorn is not exposed publicly. Cross-origin browser requests are rejected. Behind a reverse proxy, set `NATIVE_PUBLIC_ORIGIN` to the exact external origin. Hugging Face automatically uses its operator-supplied `SPACE_HOST` environment variable to derive this origin. The public port is 7860.
 
 One inference subprocess runs at a time, with two job slots including uploads/queueing and at most 16 retained job records. Processing times out after 20 minutes. This keeps CPU and storage bounded but does not prevent deliberate anonymous queue abuse; account authentication and per-user quotas remain production work. No GPU, VLM weights, paid inference API or external video storage is used.
 
@@ -47,7 +47,7 @@ For the complete container:
 
 ```bash
 docker build -t football-strategist .
-docker run --rm -p 7860:7860 football-strategist
+docker run --rm -e NATIVE_PUBLIC_ORIGIN=http://localhost:7860 -p 7860:7860 football-strategist
 ```
 
 The runtime uses Python 3.12 because NumPy/SciPy pins require Python 3.12+. The launcher forwards termination and stops the other service if Node or Uvicorn exits. CI builds the real container and submits a 0.5-second licensed fixture through its HTTP proxy, then verifies the measured source hash and removes the job.

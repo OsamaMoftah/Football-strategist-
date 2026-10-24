@@ -8,12 +8,16 @@ import subprocess
 import tempfile
 import time
 import urllib.request
+from urllib.parse import urlparse
 
 base = os.environ.get("FOOTBALL_SMOKE_URL", "http://127.0.0.1:7860/api/native")
 
 
 def request(path, method="GET", data=None, token=None, media="application/json"):
-    headers = {"Content-Type": media}
+    headers = {
+        "Content-Type": media,
+        "Origin": f"{urlparse(base).scheme}://{urlparse(base).netloc}",
+    }
     if token:
         headers["Authorization"] = f"Bearer {token}"
     req = urllib.request.Request(base + path, data=data, method=method, headers=headers)

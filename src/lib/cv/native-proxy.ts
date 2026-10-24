@@ -1,5 +1,10 @@
 /** The upstream is operator configuration; clients can never choose a destination. */
-export async function forwardNative(request: Request, path: string[], backend: string | undefined) {
+export async function forwardNative(
+  request: Request,
+  path: string[],
+  backend: string | undefined,
+  publicOrigin?: string,
+) {
   const route = path.join("/");
   const valid =
     route === "health" || route === "jobs" || /^jobs\/[a-f0-9]{32}(\/result)?$/.test(route);
@@ -14,7 +19,7 @@ export async function forwardNative(request: Request, path: string[], backend: s
         : ["GET", "PUT", "DELETE"];
   if (!methods.includes(request.method)) return json("Method not allowed", 405);
   const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin)
+  if (origin && origin !== (publicOrigin ?? new URL(request.url).origin))
     return json("Cross-origin access is not permitted", 403);
   if (!backend)
     return json(

@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: docker build -t football-strategist .
-      - run: docker run -d --name strategist -p 7860:7860 football-strategist
+      - run: docker run -d --name strategist -e NATIVE_PUBLIC_ORIGIN=http://127.0.0.1:7860 -p 7860:7860 football-strategist
       - name: Check container and bundled model
         run: |
           curl --fail --silent --output /dev/null --retry 20 --retry-all-errors --retry-delay 2 http://127.0.0.1:7860/

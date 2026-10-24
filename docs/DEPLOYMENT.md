@@ -19,7 +19,7 @@ Local container smoke test:
 
 ```bash
 docker build -t football-strategist .
-docker run --rm -p 7860:7860 football-strategist
+docker run --rm -e NATIVE_PUBLIC_ORIGIN=http://localhost:7860 -p 7860:7860 football-strategist
 ```
 
 Open `http://localhost:7860`. CI builds the image, checks the HTTP/model/health endpoints and submits a short real native job with source-hash verification. No Hugging Face Space is published by the GitHub workflow.
