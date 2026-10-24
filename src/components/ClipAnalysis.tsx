@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Download, FileJson, FileText, ScanLine, X } from "lucide-react";
+import { EngineChoice } from "./EngineChoice";
+import { analyzeNative, type AnalysisEngine, type NativeHealth } from "@/lib/cv/native-client";
 import { analyzeClip } from "@/lib/cv/video";
 import { drawAnalysis } from "@/lib/cv/draw";
 import { exportAnnotated } from "@/lib/cv/export";
@@ -12,6 +14,9 @@ import { ballAt, resultBallTrack } from "@/lib/cv/ball-motion";
 import { strategyPatterns } from "@/lib/strategy-data";
 
 interface ClipAnalysisProps {
+  engine: AnalysisEngine;
+  nativeHealth: NativeHealth | null;
+  onEngineChange: (engine: AnalysisEngine) => void;
   file: File;
   mediaCredit?: string;
   src: string;
@@ -39,6 +44,9 @@ function saveUrl(url: string, name: string) {
 
 export function ClipAnalysis({
   file,
+  engine,
+  nativeHealth,
+  onEngineChange,
   mediaCredit,
   src,
   result,
@@ -142,7 +150,7 @@ export function ClipAnalysis({
     setError(null);
     videoRef.current?.pause();
     try {
-      const measured = await analyzeClip(file, {
+      const measured = await (engine === "native" ? analyzeNative : analyzeClip)(file, {
         signal: controller.signal,
         onProgress: setProgress,
       });
@@ -160,19 +168,20 @@ export function ClipAnalysis({
         setProgress(null);
       }
     }
-  }, [file, onResult]);
+  }, [file, onResult, engine]);
 
   const initialResult = useRef(result);
+  const initialRun = useRef(runAnalysis);
   useEffect(() => {
     const kickoff = window.setTimeout(() => {
-      if (!initialResult.current) void runAnalysis();
+      if (!initialResult.current) void initialRun.current();
     }, 0);
     return () => {
       window.clearTimeout(kickoff);
       analysisRef.current?.abort();
       exportRef.current?.abort();
     };
-  }, [runAnalysis]);
+  }, []);
   useEffect(
     () => () => {
       if (download) URL.revokeObjectURL(download.url);
@@ -460,6 +469,12 @@ export function ClipAnalysis({
           </button>
           <details className="film-options">
             <summary>Analysis options</summary>{" "}
+            <EngineChoice
+              engine={engine}
+              onChange={onEngineChange}
+              health={nativeHealth}
+              disabled={busy || exporting}
+            />
             <div className="cv-review-toolbar">
               <div className="cv-layer-controls" aria-label="Video overlay layers">
                 <span>LAYERS</span>
@@ -498,18 +513,22 @@ export function ClipAnalysis({
                   <ScanLine size={14} />
                   {busy
                     ? "Analyzing…"
-                    : result?.pipelineVersion === 3
-                      ? "Run browser pass"
-                      : result
-                        ? "Analyze again"
-                        : "Analyze clip"}
+                    : engine === "native"
+                      ? "Run native analysis"
+                      : result?.pipelineVersion === 3
+                        ? "Run browser pass"
+                        : result
+                          ? "Analyze again"
+                          : "Analyze clip"}
                 </button>
                 {busy ? (
                   <button className="cv-tool-button" onClick={cancelAnalysis}>
                     Cancel
                   </button>
                 ) : (
-                  result && (
+                  result &&
+                  engine === "browser" &&
+                  result.pipelineVersion !== 3 && (
                     <button
                       className="cv-tool-button"
                       disabled={exporting}
@@ -540,6 +559,9 @@ export function ClipAnalysis({
               aria-label={progress.message}
             />
             <p>{progress.message}</p>
+            <button className="film-text-action" onClick={cancelAnalysis}>
+              Cancel analysis
+            </button>
           </div>
         )}
         {error && (
@@ -551,7 +573,7 @@ export function ClipAnalysis({
           <p className="cv-hint">Analysis is paused. Choose Analyze clip to start or retry.</p>
         )}
       </section>
-      {result && (
+      {result && !busy && (
         <MomentReview
           result={result}
           time={time}

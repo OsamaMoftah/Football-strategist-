@@ -18,7 +18,7 @@ models:
 [![CI](https://github.com/OsamaMoftah/Football-strategist-/actions/workflows/ci.yml/badge.svg)](https://github.com/OsamaMoftah/Football-strategist-/actions/workflows/ci.yml)
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
 
-Review a football clip, follow the ball, and turn measured observations into a focused coaching review. Uploaded clips run in a browser worker. The included case uses a native Python engine with precomputed observations. The app connects video playback, an annotated overlay, timestamped moments, sequence explanations and downloadable evidence.
+Review a football clip, follow the ball, and turn measured observations into a focused coaching review. Uploaded clips can run in a browser worker or, in the Docker edition, a queued native Python service. The included case uses a native Python engine with precomputed observations. The app connects video playback, an annotated overlay, timestamped moments, sequence explanations and downloadable evidence.
 
 **[Open the live demo](https://football-strategist.vercel.app/)** · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md) · [Deployment](docs/DEPLOYMENT.md) · [Model and media licenses](THIRD_PARTY_NOTICES.md)
 
@@ -45,9 +45,13 @@ The included native case is 1280×720 stadium footage, processed at 29.97 ball s
 | Sequence cues | Sustained ball proximity, kit-color groups, conservative pressure/control-change prompts, camera-translation-adjusted movement |
 | Review | Full-width media-clock overlay, precise scrubber, motion-sample stepping and click-to-play moments |
 | Delivery | Annotated silent video, schema-versioned tracking JSON and Markdown findings |
-| Privacy | File processing in a browser worker; no clip upload endpoint or analytics integration |
+| Privacy | Browser mode stays on-device; native mode uses private, ephemeral server jobs with disclosed retention |
 
 The separate **synthetic pitch sample** demonstrates geometric telemetry with generated coordinates. It is clearly labeled and is never substituted for uploaded-video analysis.
+
+## Native uploads
+
+The Docker edition now includes **Native CPU server** processing for your own clips: 30 seconds / 100 MB / up to 1080p and 60 FPS. Uploads have private job receipts, progress, cancellation and automatic cleanup. The browser verifies each returned result against the uploaded file's SHA-256. Browser processing remains the default; choosing native explicitly uploads the clip to this host. [Usage, API and retention](docs/NATIVE_UPLOADS.md).
 
 ## Native-engine case
 
@@ -80,7 +84,7 @@ pipeline/.venv/bin/pip install -r pipeline/requirements-offline.txt
 PYTHONPATH=. pipeline/.venv/bin/pytest pipeline/tests -q
 ```
 
-Python now includes an offline CV engine, annotated MP4 rendering, local VLM proposals and explicit review tooling. It is not a hosted upload backend. See [native processing instructions](docs/NATIVE_ENGINE.md). Browser inference supports current Chromium desktop browsers best; video recording depends on MediaRecorder support and requires the tab to stay visible. Mobile layout is tested separately from on-device mobile inference.
+Python includes native CV, annotated MP4 rendering, local VLM proposals, explicit review tooling and an ephemeral upload service in Docker. Vercel uses browser inference. See [native processing instructions](docs/NATIVE_ENGINE.md). Browser inference supports current Chromium desktop browsers best; video recording depends on MediaRecorder support and requires the tab to stay visible. Mobile layout is tested separately from on-device mobile inference.
 
 ## Deploy
 

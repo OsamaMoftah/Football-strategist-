@@ -16,3 +16,5 @@ The root MIT license applies to original Football strategist code. It does not r
 The football checkpoint is the published `checkpoint_best_total.pth`. This project does not claim it is a later model described in its upstream README, and does not repeat upstream accuracy claims as its own. The exported model is dynamically quantized for the browser; see `pipeline/export_ball_model.py` and the recorded checksum.
 
 Dependency licenses remain with their respective authors. A model's published license is not a guarantee about every training-data right or suitability for a particular operation. The included demo's media terms do not apply to users' independent source footage.
+
+The optional native server installs FastAPI, Uvicorn, HTTPX, OpenCV, NumPy, SciPy and ONNX Runtime from pinned Python distributions. These retain their package licenses. FFmpeg is installed from Debian packages with its distribution copyright/license files; it is not relicensed under the application's MIT license.

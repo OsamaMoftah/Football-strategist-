@@ -1,15 +1,28 @@
 "use client";
+import { EngineChoice } from "./EngineChoice";
+import type { AnalysisEngine, NativeHealth } from "@/lib/cv/native-client";
 import { nativeDemo } from "@/lib/cv/demo";
 import { useEffect, useRef } from "react";
 import type { AppView } from "./Header";
 interface ClipSetupProps {
+  engine: AnalysisEngine;
+  onEngineChange: (engine: AnalysisEngine) => void;
+  nativeHealth: NativeHealth | null;
   onUpload: () => void;
   onSample: () => void;
   onDemo: () => void;
   demoLoading: boolean;
   onView: (view: AppView) => void;
 }
-export function ClipSetup({ onUpload, onSample, onDemo, demoLoading }: ClipSetupProps) {
+export function ClipSetup({
+  onUpload,
+  onSample,
+  onDemo,
+  demoLoading,
+  engine,
+  onEngineChange,
+  nativeHealth,
+}: ClipSetupProps) {
   const preview = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)
@@ -21,6 +34,7 @@ export function ClipSetup({ onUpload, onSample, onDemo, demoLoading }: ClipSetup
         <span className="film-kicker">FOOTBALL STRATEGIST</span>
         <h1 id="setup-title">See the play.</h1>
         <p>Follow the ball. Replay the key moments. See what to look for in your next review.</p>
+        <EngineChoice engine={engine} onChange={onEngineChange} health={nativeHealth} />
         <div className="wk-actions">
           <button className="button-primary wk-blue-button" onClick={onDemo} disabled={demoLoading}>
             {demoLoading ? "Opening…" : "Open annotated demo ↗"}
@@ -29,7 +43,7 @@ export function ClipSetup({ onUpload, onSample, onDemo, demoLoading }: ClipSetup
             Upload a clip
           </button>
         </div>
-        <p className="wk-file-note">MP4 / WebM · up to 60 seconds · processed on your device</p>
+        <p className="wk-file-note">MP4 / WebM · choose the engine before uploading</p>
       </div>
       <figure className="film-demo-preview">
         <video

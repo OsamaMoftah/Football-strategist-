@@ -2,7 +2,9 @@
 .github
 .next
 node_modules
-pipeline
+pipeline/.*venv/
+pipeline/**/__pycache__/
+pipeline/tests/
 docs
 design-artifacts
 .hallmark

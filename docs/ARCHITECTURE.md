@@ -6,7 +6,7 @@
 
 `pipeline.propose_events` samples timestamped frames for a localhost Ollama instruction model. Raw response, sampling hashes, model digest and prompt remain separate from review records. The selected model returned no supported events on this case. `pipeline.review_analysis` applies explicit, source-hash-bound exclusions and visual-review notes without changing raw inference. `pipeline.render_video` checks the source hash and writes a silent H.264 derivative atomically. See [native CLI instructions](NATIVE_ENGINE.md).
 
-The browser viewer loads the native case's JSON and source MP4. Uploaded clips continue through the browser worker below. There is no hosted Python upload service.
+The browser viewer loads the native case's JSON and source MP4. Uploaded clips continue through the browser worker below. The Docker edition also exposes a same-origin native job API with bearer-protected status/results, bounded streamed uploads, one inference subprocess and expiry cleanup; see [native uploads](NATIVE_UPLOADS.md). Vercel does not run that service.
 
 ## Data flow
 

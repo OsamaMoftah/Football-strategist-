@@ -134,7 +134,9 @@ export function buildFindingsReport(
       ? [
           "## Native processing provenance",
           `Engine: ${result.processing.engine}; source SHA-256: ${result.processing.sourceSha256}; ${result.processing.framesProcessed} source frames.`,
-          "The included case uses implementation-agent visual-review notes. The local Qwen3-VL runs returned no supported events; these notes are not model-generated tactical conclusions.",
+          result.events?.some((e) => e.source === "visual-review")
+            ? "This case uses implementation-agent visual-review notes. The local Qwen3-VL runs returned no supported events; these notes are not model-generated tactical conclusions."
+            : "Native upload processing returns tracking observations and heuristic review cues. It does not run a VLM or automatically establish tactics or possession.",
         ]
       : []),
     "## Strategy review",

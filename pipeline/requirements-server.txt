@@ -1,0 +1,4 @@
+-r requirements-offline.txt
+fastapi==0.162.0
+uvicorn==0.47.0
+httpx==0.28.1

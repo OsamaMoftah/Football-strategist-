@@ -1,6 +1,6 @@
 # Native processing
 
-This path processes footage offline and publishes its measured artifacts to the web viewer. Uploads in the hosted app still run the lighter browser worker; they do not call Python or Ollama.
+This path processes footage offline and publishes its measured artifacts to the web viewer. The Docker edition can now submit uploads to Python through the [native job service](NATIVE_UPLOADS.md). Vercel uses the browser worker. Uploads do not call Ollama.
 
 Requirements: Python 3.12+, FFmpeg on PATH, included licensed ONNX models. Tested locally with Python 3.14, OpenCV 5.0, ONNX Runtime 1.26 CPU, Apple M5 / 24 GB. The pinned dependencies also run in the Python CI job.
 

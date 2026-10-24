@@ -12,11 +12,19 @@ import { BenchmarksTable } from "@/components/BenchmarksTable";
 import { strategyPatterns, type StrategyCategory } from "@/lib/strategy-data";
 import type { MatchSample } from "@/lib/match-data";
 import { nativeDemo } from "@/lib/cv/demo";
+import type { AnalysisEngine, NativeHealth } from "@/lib/cv/native-client";
 import type { AnalysisResult } from "@/lib/cv/types";
 
 export default function Home() {
   const [view, setView] = useState<AppView>("setup");
-  const [source, setSource] = useState<{ file: File; src: string; demo: boolean } | null>(null);
+  const [source, setSource] = useState<{
+    file: File;
+    src: string;
+    demo: boolean;
+    engine: AnalysisEngine;
+  } | null>(null);
+  const [engine, setEngine] = useState<AnalysisEngine>("browser");
+  const [nativeHealth, setNativeHealth] = useState<NativeHealth | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
   const demoController = useRef<AbortController | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -31,6 +39,21 @@ export default function Home() {
   const [seekRequest, setSeekRequest] = useState<{ time: number; nonce: number } | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const objectUrl = useRef<string | null>(null);
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    fetch("/api/native/health", { signal: controller.signal, cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((health) => {
+        if (health?.available) setNativeHealth(health);
+      })
+      .catch(() => {})
+      .finally(() => clearTimeout(timeout));
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/data/match_sample.json", { signal: controller.signal })
@@ -69,7 +92,7 @@ export default function Home() {
     const src = URL.createObjectURL(file);
     if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
     objectUrl.current = src;
-    setSource({ file, src, demo });
+    setSource({ file, src, demo, engine });
     setResult(measured);
     setBusy(false);
     setSampleMode(false);
@@ -146,6 +169,9 @@ export default function Home() {
         )}
         {view === "setup" && (
           <ClipSetup
+            engine={engine}
+            onEngineChange={setEngine}
+            nativeHealth={nativeHealth}
             onUpload={() => fileInput.current?.click()}
             onSample={() => {
               setSampleMode(true);
@@ -161,6 +187,11 @@ export default function Home() {
             <ClipAnalysis
               key={source.src}
               file={source.file}
+              engine={source.engine}
+              nativeHealth={nativeHealth}
+              onEngineChange={(value) =>
+                setSource((current) => (current ? { ...current, engine: value } : current))
+              }
               mediaCredit={source.demo ? nativeDemo.exportCredit : undefined}
               src={source.src}
               result={result}
@@ -180,12 +211,17 @@ export default function Home() {
             />
             {source.demo && (
               <p className="wk-demo-credit">
-                Native-engine case · <a href={nativeDemo.source}>{nativeDemo.credit}</a>. First 20
-                seconds, silent. Tracks come from Python inference; coaching notes are
-                implementation-agent visual reviews. The VLM returned no supported events.
+                Licensed source · <a href={nativeDemo.source}>{nativeDemo.credit}</a>. First 20
+                seconds, silent.
+                {result?.pipelineVersion === 3
+                  ? " Tracks use native Python inference."
+                  : " Tracks use the browser engine."}
+                {result?.events?.length
+                  ? " Coaching notes are implementation-agent visual reviews; the VLM returned no supported events."
+                  : " This pass has no visually reviewed event notes. Sequence cues are heuristic review prompts."}
                 <a href={nativeDemo.annotated} download>
                   {" "}
-                  Download annotated MP4 ↗
+                  Download reviewed reference MP4 ↗
                 </a>
               </p>
             )}
@@ -292,7 +328,7 @@ export default function Home() {
         <footer className="wk-footer">
           <span>
             {realClip
-              ? `${source.file.name} · ${busy ? "analysis running locally" : result ? `${result.frames.length} measured samples` : "local clip"}`
+              ? `${source.file.name} · ${busy ? (source.engine === "native" ? "processing on the server" : "processing on your device") : result ? `${result.frames.length} measured samples` : "local clip"}`
               : "Football strategist · football video review"}
           </span>
           <div>
