@@ -40,3 +40,9 @@ A local standalone preview was rebuilt while its process remained running, remov
 Final public worker refinement completed in 113.132 s. Exported JSON preserved the manual anchor at exactly 1.50 s with `source: manual`; it was not counted as a detector anchor. This run abstained from tactical cues when the refined segments did not clear the evidence gates.
 
 GitHub CI run https://github.com/OsamaMoftah/Football-strategist-/actions/runs/40093222401 passed web, Python and Docker container build/HTTP smoke checks for source commit 99b5e30. The Docker path is executed evidence, not only a supplied configuration. Subsequent changes improve export attribution/layout and refresh evidence.
+
+## Final attributed export
+
+Source commit da78dd0 passed hosted web, Python and container checks: https://github.com/OsamaMoftah/Football-strategist-/actions/runs/40093422544 . Final deployment dpl_DvTL2EwgxATXe3G7XajQ6HQgfuTE is aliased at https://football-strategist.vercel.app/ .
+
+The final public export `football-strategist-annotated.webm` decoded completely: VP9, 408×358, 84 frames. Its inspected frame shows the synchronized cobalt/yellow trace and four readable footer lines with Football strategist, estimate wording, creator, license and source URL. The generated Markdown now includes the same media credit and no preselected strategy claim. Final desktop/mobile screenshots use the renamed interface. Hugging Face configuration is prepared and the container is tested in CI; no Hugging Face Space has been provisioned or published.

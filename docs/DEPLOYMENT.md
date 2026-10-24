@@ -4,7 +4,7 @@
 
 Import the GitHub repository as a Next.js project. Use Node.js 22 or 24, pnpm 9.15.5 and `pnpm build`. No API secrets are required. The build copies the ONNX Runtime assets. Keep the model and license files in `public/`.
 
-The current live portfolio build is linked from the root README. A successful build does not validate detections: use the browser case in [VALIDATION.md](VALIDATION.md).
+The current live portfolio build is linked from the root README. When deploying through the existing legacy Vercel project, reassign the public name to the new immutable deployment with `vercel alias set <deployment-url> football-strategist.vercel.app`; a manually assigned alias does not automatically follow a different project alias. A successful build does not validate detections: use the browser case in [VALIDATION.md](VALIDATION.md).
 
 ## Hugging Face Docker Space
 
