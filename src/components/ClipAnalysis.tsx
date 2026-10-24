@@ -13,6 +13,7 @@ import { strategyPatterns } from "@/lib/strategy-data";
 
 interface ClipAnalysisProps {
   file: File;
+  mediaCredit?: string;
   src: string;
   result: AnalysisResult | null;
   onResult: (result: AnalysisResult) => void;
@@ -38,6 +39,7 @@ function saveUrl(url: string, name: string) {
 
 export function ClipAnalysis({
   file,
+  mediaCredit,
   src,
   result,
   onResult,
@@ -124,9 +126,12 @@ export function ClipAnalysis({
     );
     return (
       "data:text/markdown;charset=utf-8," +
-      encodeURIComponent(buildFindingsReport(result, summarizeFindings(result), selectedPatterns))
+      encodeURIComponent(
+        buildFindingsReport(result, summarizeFindings(result), selectedPatterns) +
+          (mediaCredit ? `\n## Demo media credit\n${mediaCredit}\n` : ""),
+      )
     );
-  }, [result, selectedStrategies]);
+  }, [result, selectedStrategies, mediaCredit]);
 
   const runAnalysis = useCallback(async () => {
     if (analysisRef.current && !analysisRef.current.signal.aborted) return;
@@ -229,6 +234,7 @@ export function ClipAnalysis({
         signal: controller.signal,
         onProgress: setExportProgress,
         drawOptions: { players: showPlayers, trail: showTrail },
+        mediaCredit,
       });
       if (controller.signal.aborted) return;
       const name = `${file.name.replace(/\.[^.]+$/, "")}-football-strategist.${recording.extension}`;

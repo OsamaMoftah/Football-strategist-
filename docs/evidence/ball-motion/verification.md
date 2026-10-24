@@ -36,3 +36,7 @@ The demo ball is unresolved during substantial portions of the clip, especially 
 Renamed demo: https://football-strategist.vercel.app/ . Production deployment dpl_FhrFy6DYE3Wwuq17kEvKy922DVLB. Refined single-column rail, Readout/Ball trace/Teams keyboard tabs, source-aspect trajectory, live crop, compact layers/actions and exact scrubber. 320/375/414/768/1050 px layouts checked with no visible lateral control clipping. ArrowRight changed both slider and video from 1.50 to 1.51 s. Original code is MIT; model and media terms remain separate.
 
 A local standalone preview was rebuilt while its process remained running, removing copied static assets and producing a worker-start error. This was a stale local build artifact, not a model error: the copied `.next/standalone/.next/static` directory no longer existed. The immutable deployed build is the final browser verification target. Do not mutate a running standalone deployment in place.
+
+Final public worker refinement completed in 113.132 s. Exported JSON preserved the manual anchor at exactly 1.50 s with `source: manual`; it was not counted as a detector anchor. This run abstained from tactical cues when the refined segments did not clear the evidence gates.
+
+GitHub CI run https://github.com/OsamaMoftah/Football-strategist-/actions/runs/40093222401 passed web, Python and Docker container build/HTTP smoke checks for source commit 99b5e30. The Docker path is executed evidence, not only a supplied configuration. Subsequent changes improve export attribution/layout and refresh evidence.

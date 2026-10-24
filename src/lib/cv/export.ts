@@ -11,6 +11,7 @@ export async function exportAnnotated(
     signal: AbortSignal;
     onProgress: (fraction: number) => void;
     drawOptions?: DrawOptions;
+    mediaCredit?: string;
   },
 ) {
   const { signal, onProgress } = options;
@@ -46,15 +47,25 @@ export async function exportAnnotated(
           canvas.height,
           options.drawOptions,
         );
-        const size = Math.max(10, canvas.width / 100);
+        const size = Math.max(9, canvas.width / 110);
+        const lines = [
+          `Football strategist · ${result.ballSampleRate ?? result.sampleRate} Hz · ${video.currentTime.toFixed(2)} s`,
+          "Dashed trace = pixel estimate · image-space coordinates",
+          ...(options.mediaCredit ? options.mediaCredit.split("\n") : []),
+        ];
+        const lineHeight = size * 1.4,
+          footerHeight = lines.length * lineHeight + size;
         ctx.font = `${size}px ui-sans-serif, sans-serif`;
-        ctx.fillStyle = "rgba(8,18,35,.8)";
-        ctx.fillRect(0, canvas.height - size * 2.5, canvas.width, size * 2.5);
+        ctx.fillStyle = "rgba(8,18,35,.88)";
+        ctx.fillRect(0, canvas.height - footerHeight, canvas.width, footerHeight);
         ctx.fillStyle = "#fff";
-        ctx.fillText(
-          `Football strategist · RF-DETR Nano · ${result.ballSampleRate ?? result.sampleRate} Hz ball trace · dashed = appearance estimate · ${video.currentTime.toFixed(2)} s`,
-          size,
-          canvas.height - size * 0.9,
+        lines.forEach((line, index) =>
+          ctx.fillText(
+            line,
+            size,
+            canvas.height - footerHeight + size + lineHeight * (index + 0.5),
+            canvas.width - size * 2,
+          ),
         );
         onProgress(Math.min(1, video.currentTime / result.source.duration));
         request = window.requestAnimationFrame(draw);

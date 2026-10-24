@@ -11,6 +11,7 @@
 | Ball continuity | 1.7 s / 3.39 s, 2 segments | 14 detector anchors + 9 appearance estimates; not accuracy |
 | Runtime | 90.1 s | One development-machine full inference run |
 | Video export | VP9, 408×358, 85 frames; complete FFmpeg decode | Actual downloaded annotated WebM |
+| Hosted container | Build and HTTP/model-asset smoke checks passed in GitHub Actions | Non-root port-7860 runtime |
 | Display | DPR 2; timestamp seek read back at 1.50 s | Browser canvas/source fit |
 
 Evidence: [saved browser result](../public/demo/leao-analysis.json), [detailed execution notes](evidence/ball-motion/verification.md), [sample exported frame](evidence/ball-motion/annotated-frame.png). The CI badge reports the actual current repository checks; local results do not substitute for hosted checks.

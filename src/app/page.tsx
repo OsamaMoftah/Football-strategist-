@@ -164,6 +164,11 @@ export default function Home() {
             <ClipAnalysis
               key={source.src}
               file={source.file}
+              mediaCredit={
+                source.demo
+                  ? "Goal by Rafael Leao · Saggittarius A · CC BY-SA 4.0\ncommons.wikimedia.org/?curid=131110728"
+                  : undefined
+              }
               src={source.src}
               result={result}
               onResult={setResult}
