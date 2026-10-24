@@ -70,15 +70,23 @@ body {
 }
 .wk-skip {
   position: fixed;
-  top: -80px;
+  top: 12px;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
   left: 16px;
   z-index: 100;
-  padding: 12px;
+  padding: 0;
   background: var(--color-ink);
   color: var(--color-paper);
 }
 .wk-skip:focus-visible {
-  top: 12px;
+  clip-path: none;
+  width: auto;
+  height: auto;
+  padding: 12px;
+  overflow: visible;
 }
 .wk-header {
   border-bottom: 2px solid var(--color-ink);
