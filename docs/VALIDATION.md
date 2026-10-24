@@ -1,5 +1,17 @@
 # Validation and operational readiness
 
+## Native upload service — 24 October 2026
+
+The upload service is deployed on [Hugging Face CPU Basic](https://huggingface.co/spaces/sammoftah/Football-strategist); [Vercel](https://football-strategist.vercel.app/) retains the browser engine and links to the native edition. Current behavioral suites: **31 TypeScript CV tests and 23 Python tests**. Application-code CI passed all web, Python and real-container checks at `3cdd3d8`.
+
+Verified separately:
+
+- Local browser submission: 600 source frames, 500 raw retained ball points, 186.2s native inference, exact source-hash match. Cancellation left no inference worker or job files.
+- Hosted container: 15 source frames and 15 retained ball points from a real 0.5s licensed fixture; returned source hash checked and private job deleted. The same smoke check now includes the browser's Origin header, catching reverse-proxy configuration errors.
+- Public API: exact Hugging Face HTTPS origin accepted, other browser origins rejected. Anonymous health confirms the Python engine; results require each job's separate bearer token.
+
+These checks demonstrate data flow and lifecycle behavior. They do not establish detector accuracy, tactical understanding, performance on arbitrary clips or commercial operational readiness. See [execution details](evidence/native-upload/verification.md) and [upload retention/limits](NATIVE_UPLOADS.md).
+
 ## Native case — 24 October 2026
 
 - 600 frames / 20.02 seconds, 1280×720, real CC BY-SA 4.0 footage by NaBUru38.
@@ -9,7 +21,7 @@
 - Qwen3-VL-4B-Instruct returned no supported events in both full-sequence and shorter-window runs. The default thinking tag also exhausted its output budget. No automatic strategy-understanding claim follows from this experiment.
 - Three coaching notes are implementation-agent visual reviews, distinct from model detections and unsuccessful VLM proposals.
 - Native MP4: H.264, 1280×720, 600 frames, 20.02s; full FFmpeg decode passed.
-- Current behavioral suites: 26 TypeScript CV tests and 15 Python tests.
+- Earlier native-case checkpoint: 26 TypeScript CV tests and 15 Python tests; the upload-service suite above supersedes those counts.
 
 Artifacts: [case files and provenance](../public/demo/u17/README.md). Reproduce with [native CLI commands](NATIVE_ENGINE.md). Multi-match generalization, player-ID metrics, fully independent labels, VFR timestamps and successful event inference remain open.
 

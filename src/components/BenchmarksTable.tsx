@@ -55,8 +55,8 @@ export function BenchmarksTable() {
             Pipeline status
           </h1>
           <p className="view-panel__description">
-            The included case uses offline native CV. Uploads use browser inference. Spatial metrics
-            remain available only in the illustrative sample workspace.
+            The Docker edition supports native Python uploads; browser processing remains available.
+            Spatial metrics remain available only in the illustrative sample workspace.
           </p>
         </div>
         <span className="pipeline-tag">Research prototype</span>

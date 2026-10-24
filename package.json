@@ -34,7 +34,7 @@
     "typescript": "^5"
   },
   "packageManager": "pnpm@9.15.5",
-  "description": "Private, on-device football clip review with ball tracking and evidence-linked tactical cues.",
+  "description": "Football clip review with browser or native processing, ball tracking and evidence-linked review cues.",
   "license": "MIT",
   "engines": {
     "node": ">=22 <25"

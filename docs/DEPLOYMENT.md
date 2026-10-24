@@ -8,6 +8,9 @@ The current live portfolio build is linked from the root README. `football-strat
 
 ## Hugging Face Docker Space
 
+Live: [Space](https://huggingface.co/spaces/sammoftah/Football-strategist) · [direct app](https://sammoftah-football-strategist.hf.space/). It runs CPU Basic under the existing account subscription; no paid hardware upgrade was selected. GitHub remains the canonical source; the Space is a deployment snapshot uploaded through the authenticated Hub SDK.
+
+
 The root README already includes `sdk: docker`, `app_port: 7860` and model references, following [Hugging Face's Docker Spaces documentation](https://huggingface.co/docs/hub/spaces-sdks-docker). The Dockerfile builds Next.js standalone output and serves it as non-root UID 1000 on port 7860. The Docker edition also runs FastAPI on loopback and a queued native CV subprocess. The visitor chooses browser or native processing. CPU Basic is sufficient; no GPU is required. See [native uploads](NATIVE_UPLOADS.md).
 
 1. Create a Docker Space under your own account, choosing its visibility and hardware. Check the current account/hardware terms in Hugging Face before creating it; this repository does not provision or purchase hosting.
