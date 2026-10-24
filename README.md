@@ -6,7 +6,7 @@ colorTo: gray
 sdk: docker
 app_port: 7860
 fullWidth: true
-short_description: On-device football video review with ball tracking and evidence-linked sequence cues.
+short_description: Football video review with native ball tracking.
 license: mit
 models:
   - onnx-community/rfdetr_nano-ONNX
@@ -20,7 +20,7 @@ models:
 
 Review a football clip, follow the ball, and turn measured observations into a focused coaching review. Uploaded clips can run in a browser worker or, in the Docker edition, a queued native Python service. The included case uses a native Python engine with precomputed observations. The app connects video playback, an annotated overlay, timestamped moments, sequence explanations and downloadable evidence.
 
-**[Open the live demo](https://football-strategist.vercel.app/)** · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md) · [Deployment](docs/DEPLOYMENT.md) · [Model and media licenses](THIRD_PARTY_NOTICES.md)
+**[Native upload demo](https://huggingface.co/spaces/sammoftah/Football-strategist)** · [Browser demo](https://football-strategist.vercel.app/) · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md) · [Deployment](docs/DEPLOYMENT.md) · [Model and media licenses](THIRD_PARTY_NOTICES.md)
 
 ![Video-led review with a synchronized ball trace and timestamped coaching moments](docs/evidence/native-engine/review.png)
 

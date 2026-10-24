@@ -47,8 +47,14 @@ export function EngineChoice({
       </p>
       {!health?.available && (
         <small>
-          Native uploads are available in the Docker edition; this deployment currently uses browser
-          processing.
+          Native uploads run in the Docker edition.{" "}
+          <a
+            href="https://huggingface.co/spaces/sammoftah/Football-strategist"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open the native-upload edition ↗
+          </a>
         </small>
       )}
     </fieldset>
