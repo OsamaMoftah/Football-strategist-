@@ -8,6 +8,7 @@ Verified separately:
 
 - Local browser submission: 600 source frames, 500 raw retained ball points, 186.2s native inference, exact source-hash match. Cancellation left no inference worker or job files.
 - Hosted container: 15 source frames and 15 retained ball points from a real 0.5s licensed fixture; returned source hash checked and private job deleted. The same smoke check now includes the browser's Origin header, catching reverse-proxy configuration errors.
+- Full hosted browser pass: all 600 source frames, 501 retained ball points and source-hash verification; 685.4s on CPU Basic. Five heuristic moments, no confirmed tactical events. This is a single-case runtime/data-flow check, not accuracy.
 - Public API: exact Hugging Face HTTPS origin accepted, other browser origins rejected. Anonymous health confirms the Python engine; results require each job's separate bearer token.
 
 These checks demonstrate data flow and lifecycle behavior. They do not establish detector accuracy, tactical understanding, performance on arbitrary clips or commercial operational readiness. See [execution details](evidence/native-upload/verification.md) and [upload retention/limits](NATIVE_UPLOADS.md).

@@ -16,3 +16,11 @@
 - The strict origin check initially rejected legitimate requests because the internal HTTP bind URL differed from public HTTPS. A regression test now covers the mismatch; the route derives the exact external origin from Hugging Face's operator-supplied SPACE_HOST, or explicit NATIVE_PUBLIC_ORIGIN elsewhere. Other origins remain rejected.
 - Hosted browser confirmed Native CPU server became enabled, disclosed server processing and accepted a new 20.02s submission with a visible cancel control. The full hosted run is evaluated separately from the short smoke fixture; do not substitute one for the other.
 - No GPU, VLM inference service, persistent storage or newly purchased hardware was provisioned.
+
+## Full hosted browser completion
+
+The 20.02-second browser submission completed on CPU Basic in **685.4408 seconds**, processing all **600 source frames**. Its export contained **501 retained ball points** (461 detector anchors, 40 appearance estimates), four track segments and 200 player samples. The client verified source SHA-256 `0e3ae453dc8cb22097431e6923bbbf2b66725a8f2e0a80e7c5842d2f0c1d6c1b` before accepting it. Five heuristic review moments were shown; no visually reviewed or automatically confirmed tactical events were present.
+
+[Actual hosted result](hosted-analysis.json) · [Actual hosted viewer at 13.78s](hosted-review.png).
+
+This is one hosted runtime/data-flow measurement. It is not accuracy or real-time performance. The saved result is unreviewed and may include false acquisitions. Host and local outputs differ slightly with decoder/platform/quantized inference; neither run is treated as ground truth. The source footage is NaBUru38's CC BY-SA 4.0 U17 sequence, credited in the viewer and [case manifest](../../../public/demo/u17/README.md).
