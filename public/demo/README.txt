@@ -11,3 +11,5 @@ Source: https://commons.wikimedia.org/wiki/File:Goal_by_Rafael_Leao.webm
 License: https://creativecommons.org/licenses/by-sa/4.0/
 leao-analysis.json contains genuine browser-model outputs sampled from exactly this clip; it is served for immediate review. Analyze again reruns local inference.
 Original media unchanged. Football strategist adds annotations on playback/export. Annotated demo derivatives are CC BY-SA 4.0.
+
+annotated-preview.webm is the actual browser-exported annotated goal clip, copied from docs/evidence/ball-motion/football-strategist-annotated.webm. It is used only as the landing preview and is CC BY-SA 4.0 with embedded creator, source and license credit. It is not a fabricated inference visualization.

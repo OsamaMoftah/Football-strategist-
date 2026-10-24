@@ -18,19 +18,19 @@ models:
 [![CI](https://github.com/OsamaMoftah/Football-strategist-/actions/workflows/ci.yml/badge.svg)](https://github.com/OsamaMoftah/Football-strategist-/actions/workflows/ci.yml)
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
 
-Review a football clip, follow the ball, and turn measured observations into a focused coaching review. Inference runs on the viewer's device. The app connects video playback, an annotated overlay, a ball magnifier, sequence explanations and downloadable evidence.
+Review a football clip, follow the ball, and turn measured observations into a focused coaching review. Inference runs on the viewer's device. The app connects video playback, an annotated overlay, timestamped moments, sequence explanations and downloadable evidence.
 
 **[Open the live demo](https://football-strategist.vercel.app/)** · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md) · [Deployment](docs/DEPLOYMENT.md) · [Model and media licenses](THIRD_PARTY_NOTICES.md)
 
-![Video review with a synchronized ball trace and source-pixel magnifier](docs/evidence/ball-motion/live-review.jpg)
+![Video-led review with a synchronized ball trace and timestamped coaching moments](docs/evidence/video-led/review.jpg)
 
 ## Try the case
 
-1. Choose **Try motion demo** to open a licensed goal sequence with genuine, saved model observations immediately.
+1. Choose **Open annotated demo** to open a licensed goal sequence with genuine, saved model observations immediately.
 2. Play or scrub the footage. The cobalt trace, yellow ball marker and magnifier follow the video clock.
-3. Open **Readout**, **Ball trace** or **Teams**. Each sequence cue includes a timestamp, supporting observations and a coaching question.
-4. Choose **Analyze again** to run inference locally, or upload your own MP4/WebM. Use **Correct ball** to supply an explicitly labeled manual anchor.
-5. Export the annotated silent video, tracking JSON or written findings. Select a strategy lens to guide the human review.
+3. Choose a timestamp in **Moments worth watching**, then use **Watch this moment** to play from that point. A short observation and coaching question sit below the footage; **Why this moment?** reveals supporting measurements.
+4. Open **Analysis options → Analyze again** to run inference locally, or upload your own MP4/WebM. **Correct ball** supplies an explicitly labeled manual anchor.
+5. Use **Save video** for the annotated silent clip, or expand **Export & analysis details** for tracking JSON and written findings. Select a strategy lens to guide the human review.
 
 The included goal clip is a narrow, low-resolution stadium recording. It deliberately exposes unresolved-ball gaps rather than hiding them. For your own case, use a 5–15-second uninterrupted wide view with a visible ball and distinct kit colors. The technical limits are 60 seconds and 200 MB; longer clips can take several minutes.
 
@@ -43,7 +43,7 @@ The included goal clip is a narrow, low-resolution stadium recording. It deliber
 | Ball movement | 12 Hz sampling with labeled detector/manual anchors, local appearance estimates and ≤0.2 s interpolation |
 | Continuity | Geometry gates, temporal association, shot-cut resets and split lost-ball segments |
 | Sequence cues | Sustained ball proximity, kit-color groups, conservative pressure/control-change prompts, camera-translation-adjusted movement |
-| Review | Media-clock overlay, pixel magnifier, precise scrubber, motion-sample stepping and timestamp links |
+| Review | Full-width media-clock overlay, precise scrubber, motion-sample stepping and click-to-play moments |
 | Delivery | Annotated silent video, schema-versioned tracking JSON and Markdown findings |
 | Privacy | File processing in a browser worker; no clip upload endpoint or analytics integration |
 

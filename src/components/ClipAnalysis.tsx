@@ -6,9 +6,9 @@ import { analyzeClip } from "@/lib/cv/video";
 import { drawAnalysis } from "@/lib/cv/draw";
 import { exportAnnotated } from "@/lib/cv/export";
 import { type AnalysisProgress, type AnalysisResult } from "@/lib/cv/types";
-import { DetectionTimeline } from "@/components/DetectionTimeline";
+import { MomentReview } from "@/components/MomentReview";
 import { buildFindingsReport, summarizeFindings } from "@/lib/cv/findings";
-import { SequencePanel } from "@/components/SequencePanel";
+import { ballAt, resultBallTrack } from "@/lib/cv/ball-motion";
 import { strategyPatterns } from "@/lib/strategy-data";
 
 interface ClipAnalysisProps {
@@ -67,6 +67,8 @@ export function ClipAnalysis({
   const [showPlayers, setShowPlayers] = useState(true);
   const [showTrail, setShowTrail] = useState(true);
   const [anchoring, setAnchoring] = useState(false);
+  const ballTrack = useMemo(() => (result ? resultBallTrack(result) : []), [result]);
+  const currentBall = ballAt(ballTrack, time);
   const busy = progress !== null,
     exporting = exportProgress !== null;
   useEffect(() => {
@@ -320,316 +322,267 @@ export function ClipAnalysis({
 
   return (
     <>
-      <section className="wk-heading wk-review-heading">
-        <h1>Review the sequence.</h1>
+      <header className="film-heading">
+        <div>
+          <span className="film-kicker">YOUR CLIP, EXPLAINED</span>
+          <h1>Clip review.</h1>
+        </div>
         <p>
-          Follow the ball. Read the pressure. Turn timestamped evidence into a tactical review. Your
-          video stays on your device.
+          {file.name}
+          <span>
+            {busy
+              ? "Building the analysis…"
+              : result
+                ? "Annotated video · ready to review"
+                : "Local clip · private by default"}
+          </span>
         </p>
-      </section>
-      <p className="wk-source">
-        {file.name} · RF-DETR Nano ·{" "}
-        {busy
-          ? "analysis running"
-          : result
-            ? `${result.frames.length} measured samples`
-            : "local clip"}
-      </p>
-      <div className="cv-layout">
-        <div className="workspace-main">
-          <section className="panel" aria-label="Real clip analysis">
-            <div className="panel-heading">
-              <div>
-                <h2 className="panel-heading__title">Video analysis</h2>
-                <p className="panel-heading__description">{file.name}</p>
-              </div>
-              <span className={`mini-chip ${result ? "mini-chip--good" : "mini-chip--neutral"}`}>
-                {busy ? "Analyzing" : result ? "Ball & player analysis" : "Clip loaded"}
-              </span>
-            </div>
-            <div className="video-panel__body">
-              <div
-                className={`video-viewport cv-viewport ${anchoring ? "cv-viewport--anchor" : ""}`}
-                onClick={(event) => {
-                  if (!anchoring || !result || busy) return;
-                  const video = videoRef.current;
-                  if (!video) return;
-                  const bounds = event.currentTarget.getBoundingClientRect(),
-                    ratio = Math.min(
-                      bounds.width / video.videoWidth,
-                      bounds.height / video.videoHeight,
-                    ),
-                    w = video.videoWidth * ratio,
-                    h = video.videoHeight * ratio;
-                  const x = (event.clientX - bounds.left - (bounds.width - w) / 2) / w,
-                    y = (event.clientY - bounds.top - (bounds.height - h) / 2) / h;
-                  if (x < 0 || x > 1 || y < 0 || y > 1) return;
-                  const timestamp = video.currentTime,
-                    controller = new AbortController();
-                  analysisRef.current = controller;
-                  setAnchoring(false);
-                  setError(null);
-                  void analyzeClip(file, {
-                    signal: controller.signal,
-                    onProgress: setProgress,
-                    existing: result,
-                    ballSeed: { timestamp, x, y },
-                  })
-                    .then((measured) => {
-                      if (!controller.signal.aborted) onResult(measured);
-                    })
-                    .catch((cause) => {
-                      if (!controller.signal.aborted)
-                        setError(cause instanceof Error ? cause.message : "Ball refinement failed");
-                    })
-                    .finally(() => {
-                      if (analysisRef.current === controller) {
-                        analysisRef.current = null;
-                        setProgress(null);
-                      }
-                    });
-                }}
-              >
-                <video
-                  ref={videoRef}
-                  src={src}
-                  controls
-                  playsInline
-                  preload="auto"
-                  aria-label="Uploaded match video"
-                  onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
-                  onSeeked={(event) => setTime(event.currentTarget.currentTime)}
-                  onError={() =>
-                    setError(
-                      "This browser could not play the selected file. Choose an H.264 MP4 or WebM.",
-                    )
-                  }
-                />
-                <canvas ref={canvasRef} className="cv-overlay" aria-hidden="true" />
-              </div>
-              <div className="cv-review-toolbar">
-                <div className="cv-layer-controls" aria-label="Video overlay layers">
-                  <span>LAYERS</span>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={showOverlay}
-                      onChange={(e) => setShowOverlay(e.target.checked)}
-                    />
-                    Overlay
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={showPlayers}
-                      onChange={(e) => setShowPlayers(e.target.checked)}
-                    />
-                    Players
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={showTrail}
-                      onChange={(e) => setShowTrail(e.target.checked)}
-                    />
-                    Trail
-                  </label>
-                </div>
-                <div className="cv-engine-actions">
-                  <button
-                    className="cv-tool-button"
-                    type="button"
-                    onClick={() => void runAnalysis()}
-                    disabled={busy || exporting}
-                  >
-                    <ScanLine size={14} />
-                    {busy ? "Analyzing…" : result ? "Analyze again" : "Analyze clip"}
-                  </button>
-                  {busy ? (
-                    <button className="cv-tool-button" onClick={cancelAnalysis}>
-                      Cancel
-                    </button>
-                  ) : (
-                    result && (
-                      <button
-                        className="cv-tool-button"
-                        disabled={exporting}
-                        onClick={() => {
-                          videoRef.current?.pause();
-                          setAnchoring(!anchoring);
-                        }}
-                      >
-                        {anchoring ? "Cancel anchor" : "Correct ball"}
-                      </button>
-                    )
-                  )}
-                </div>
-              </div>
-              {result && (
-                <div className="cv-precision-scrub">
-                  <button
-                    onClick={() =>
-                      seekToSample(
-                        Math.max(0, time - 1 / (result.ballSampleRate ?? result.sampleRate)),
-                      )
-                    }
-                    aria-label="Previous motion sample"
-                  >
-                    ←
-                  </button>
-                  <span>{time.toFixed(2)}</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max={Math.max(0, result.source.duration - 0.01)}
-                    step="0.01"
-                    value={Math.min(time, result.source.duration - 0.01)}
-                    aria-label="Seek analysis video"
-                    onChange={(e) => {
-                      const timestamp = Number(e.target.value);
-                      videoRef.current?.pause();
-                      if (videoRef.current) videoRef.current.currentTime = timestamp;
-                      setTime(timestamp);
-                    }}
-                  />
-                  <span>{result.source.duration.toFixed(2)} s</span>
-                  <button
-                    onClick={() =>
-                      seekToSample(
-                        Math.min(
-                          result.source.duration - 0.01,
-                          time + 1 / (result.ballSampleRate ?? result.sampleRate),
-                        ),
-                      )
-                    }
-                    aria-label="Next motion sample"
-                  >
-                    →
-                  </button>
-                </div>
-              )}
-              {anchoring && (
-                <p className="cv-anchor-note" role="status">
-                  Pause at a clear ball, then click its center in the video. This adds a manual
-                  anchor and reruns ball tracking.
-                </p>
-              )}
-              {progress && (
-                <div className="cv-progress" role="status">
-                  <progress
-                    max={progress.total}
-                    value={progress.phase === "loading" ? undefined : progress.completed}
-                    aria-label={progress.message}
-                  />
-                  <p>{progress.message}</p>
-                </div>
-              )}
-              {error && (
-                <p className="cv-error" role="alert">
-                  {error}
-                </p>
-              )}
-              {!busy && !result && !error && (
-                <p className="cv-hint">
-                  Analysis is paused. Choose Analyze clip to start or retry.
-                </p>
-              )}
-              {result && (
-                <p className="cv-hint">
-                  Blue trace / yellow ball · dashed strokes are pixel estimates ·{" "}
-                  {result.ballSampleRate ?? result.sampleRate} Hz motion sampling.
-                </p>
-              )}
-            </div>
-          </section>
+      </header>
+      <section className="film-player" aria-label="Real clip analysis">
+        <div
+          className={`video-viewport cv-viewport film-viewport ${anchoring ? "cv-viewport--anchor" : ""}`}
+          onClick={(event) => {
+            if (!anchoring || !result || busy) return;
+            const video = videoRef.current;
+            if (!video) return;
+            const bounds = event.currentTarget.getBoundingClientRect(),
+              ratio = Math.min(bounds.width / video.videoWidth, bounds.height / video.videoHeight),
+              w = video.videoWidth * ratio,
+              h = video.videoHeight * ratio;
+            const x = (event.clientX - bounds.left - (bounds.width - w) / 2) / w,
+              y = (event.clientY - bounds.top - (bounds.height - h) / 2) / h;
+            if (x < 0 || x > 1 || y < 0 || y > 1) return;
+            const timestamp = video.currentTime,
+              controller = new AbortController();
+            analysisRef.current = controller;
+            setAnchoring(false);
+            setError(null);
+            void analyzeClip(file, {
+              signal: controller.signal,
+              onProgress: setProgress,
+              existing: result,
+              ballSeed: { timestamp, x, y },
+            })
+              .then((measured) => {
+                if (!controller.signal.aborted) onResult(measured);
+              })
+              .catch((cause) => {
+                if (!controller.signal.aborted)
+                  setError(cause instanceof Error ? cause.message : "Ball refinement failed");
+              })
+              .finally(() => {
+                if (analysisRef.current === controller) {
+                  analysisRef.current = null;
+                  setProgress(null);
+                }
+              });
+          }}
+        >
+          <video
+            ref={videoRef}
+            src={src}
+            controls
+            playsInline
+            preload="auto"
+            aria-label="Uploaded match video"
+            onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
+            onSeeked={(event) => setTime(event.currentTarget.currentTime)}
+            onError={() =>
+              setError(
+                "This browser could not play the selected file. Choose an H.264 MP4 or WebM.",
+              )
+            }
+          />
+          <canvas ref={canvasRef} className="cv-overlay" aria-hidden="true" />
           {result && (
-            <DetectionTimeline
-              frames={result.frames}
-              time={time}
-              duration={result.source.duration}
-              sampleRate={result.sampleRate}
-              onSeek={seekToSample}
-            />
-          )}
-          {result && (
-            <div className="wk-review-links">
-              <button className="wk-text-button" type="button" onClick={onFindings}>
-                Read the measured findings →
-              </button>
-              <button className="wk-text-button" type="button" onClick={onBrowseStrategies}>
-                Choose a tactical lens →
-              </button>
+            <div className="film-video-tag" aria-hidden="true">
+              <span
+                className={
+                  currentBall ? "film-status-dot" : "film-status-dot film-status-dot--lost"
+                }
+              />
+              {currentBall ? "BALL TRACE" : "BALL UNRESOLVED"}
+              <span>{time.toFixed(2)} s</span>
             </div>
           )}
         </div>
-        <SequencePanel
-          videoRef={videoRef}
+        {result && (
+          <div className="cv-precision-scrub">
+            <button
+              onClick={() =>
+                seekToSample(Math.max(0, time - 1 / (result.ballSampleRate ?? result.sampleRate)))
+              }
+              aria-label="Previous motion sample"
+            >
+              ←
+            </button>
+            <span>{time.toFixed(2)}</span>
+            <input
+              type="range"
+              min="0"
+              max={Math.max(0, result.source.duration - 0.01)}
+              step="0.01"
+              value={Math.min(time, result.source.duration - 0.01)}
+              aria-label="Seek analysis video"
+              onChange={(e) => {
+                const timestamp = Number(e.target.value);
+                videoRef.current?.pause();
+                if (videoRef.current) videoRef.current.currentTime = timestamp;
+                setTime(timestamp);
+              }}
+            />
+            <span>{result.source.duration.toFixed(2)} s</span>
+            <button
+              onClick={() =>
+                seekToSample(
+                  Math.min(
+                    result.source.duration - 0.01,
+                    time + 1 / (result.ballSampleRate ?? result.sampleRate),
+                  ),
+                )
+              }
+              aria-label="Next motion sample"
+            >
+              →
+            </button>
+          </div>
+        )}
+        <div className="film-player-footer">
+          <span>
+            Blue: ball path <i /> Yellow: ball <i /> Dashed: estimate
+          </span>
+          <button
+            className="film-text-action"
+            disabled={!result || busy || exporting}
+            onClick={() => void exportVideo()}
+          >
+            {exporting ? `Saving ${Math.round((exportProgress ?? 0) * 100)}%` : "Save video ↗"}
+          </button>
+          <details className="film-options">
+            <summary>Analysis options</summary>{" "}
+            <div className="cv-review-toolbar">
+              <div className="cv-layer-controls" aria-label="Video overlay layers">
+                <span>LAYERS</span>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={showOverlay}
+                    onChange={(e) => setShowOverlay(e.target.checked)}
+                  />
+                  Overlay
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={showPlayers}
+                    onChange={(e) => setShowPlayers(e.target.checked)}
+                  />
+                  Players
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={showTrail}
+                    onChange={(e) => setShowTrail(e.target.checked)}
+                  />
+                  Trail
+                </label>
+              </div>
+              <div className="cv-engine-actions">
+                <button
+                  className="cv-tool-button"
+                  type="button"
+                  onClick={() => void runAnalysis()}
+                  disabled={busy || exporting}
+                >
+                  <ScanLine size={14} />
+                  {busy ? "Analyzing…" : result ? "Analyze again" : "Analyze clip"}
+                </button>
+                {busy ? (
+                  <button className="cv-tool-button" onClick={cancelAnalysis}>
+                    Cancel
+                  </button>
+                ) : (
+                  result && (
+                    <button
+                      className="cv-tool-button"
+                      disabled={exporting}
+                      onClick={() => {
+                        videoRef.current?.pause();
+                        setAnchoring(!anchoring);
+                      }}
+                    >
+                      {anchoring ? "Cancel anchor" : "Correct ball"}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+          </details>
+        </div>
+        {anchoring && (
+          <p className="cv-anchor-note" role="status">
+            Pause at a clear ball, then click its center in the video. This adds a manual anchor and
+            reruns ball tracking.
+          </p>
+        )}
+        {progress && (
+          <div className="cv-progress" role="status">
+            <progress
+              max={progress.total}
+              value={progress.phase === "loading" ? undefined : progress.completed}
+              aria-label={progress.message}
+            />
+            <p>{progress.message}</p>
+          </div>
+        )}
+        {error && (
+          <p className="cv-error" role="alert">
+            {error}
+          </p>
+        )}
+        {!busy && !result && !error && (
+          <p className="cv-hint">Analysis is paused. Choose Analyze clip to start or retry.</p>
+        )}
+      </section>
+      {result && (
+        <MomentReview
           result={result}
           time={time}
+          onWatch={(timestamp) => {
+            seekToSample(timestamp);
+            void videoRef.current
+              ?.play()
+              .catch(() => setError("Playback could not start. Use the video's play control."));
+          }}
           onSeek={seekToSample}
+          onFindings={onFindings}
           onStrategy={(id) => {
             if (!selectedStrategies.includes(id)) onToggleStrategy(id);
             onBrowseStrategies();
           }}
         />
-      </div>
-      <div className="cv-review-bottom">
-        {" "}
+      )}
+      <details className="film-delivery" open={exporting || Boolean(exportError) || undefined}>
+        <summary>
+          Export & analysis details <span>Video · report · tracking data</span>
+        </summary>
+        <div className="cv-export-actions">
+          {exportActions}
+          <p className="cv-hint">
+            Annotated export is silent and records at playback speed. Keep this tab visible.
+          </p>
+        </div>
         {result && (
-          <section className="panel" aria-label="Measured analysis summary">
-            <div className="cv-stats">
-              <div>
-                <span>Analyzed frames</span>
-                <strong>{result.frames.length}</strong>
-              </div>
-              <div>
-                <span>Person track segments</span>
-                <strong>{result.summary.personTrackSegments}</strong>
-              </div>
-              <div>
-                <span>Frames with people</span>
-                <strong>
-                  {Math.round((result.summary.framesWithPeople / result.frames.length) * 100)}%
-                </strong>
-              </div>
-              <div>
-                <span>Frames with ball candidates</span>
-                <strong>
-                  {Math.round((result.summary.framesWithBall / result.frames.length) * 100)}%
-                </strong>
-              </div>
-            </div>
-            <p className="cv-hint cv-panel-note">
-              Processed in {(result.elapsedMs / 1000).toFixed(1)} s. Frame coverage means a
-              candidate was present, not measured accuracy. Ball: {result.summary.framesWithBall}/
-              {result.frames.length} frames. Track IDs describe short visual segments, not player
-              identities.{" "}
-              {result.summary.totalDetections === 0
-                ? "No confident detections were found. Try a closer, clearer clip."
-                : ""}
-            </p>
-          </section>
+          <p className="film-evidence">
+            {result.frames.length} player samples ·{" "}
+            {result.ballTrack?.filter((point) => point.source === "detector").length ?? 0} retained
+            ball detector anchors · {(result.elapsedMs / 1000).toFixed(1)} s processing. Scores and
+            detection coverage are not accuracy. Pitch metrics and automated strategy classification
+            are unavailable for this clip.
+          </p>
         )}
-        <section id="clip-export" className="panel">
-          <div className="panel-heading">
-            <div>
-              <h2 className="panel-heading__title">Export this analysis</h2>
-              <p className="panel-heading__description">
-                {result
-                  ? "Source footage with synchronized boxes, IDs, and ball candidates"
-                  : "Available when analysis finishes"}
-              </p>
-            </div>
-          </div>
-          <div className="cv-export-actions">
-            {exportActions}
-            <p className="cv-hint">
-              Video export is silent and records at playback speed, up to 1080p. Chrome/Edge usually
-              save WebM; the extension matches the browser’s supported format.
-            </p>
-          </div>
-        </section>
-      </div>
+      </details>
       {exportOpen && (
         <div
           className="modal-backdrop"

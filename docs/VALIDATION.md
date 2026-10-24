@@ -4,7 +4,7 @@
 
 | Check | Result | Scope |
 | --- | --- | --- |
-| CV behavioral tests | 22 passing | Decoder, association, geometry, appearance, cut/gap handling, abstention, cue gates and recording format |
+| CV behavioral tests | 25 passing | Decoder, association, geometry, appearance, cut/gap handling, abstention, cue gates and recording format |
 | Python tests | 5 passing | Geometry/math helpers only |
 | Typecheck, lint, formatting, production build | Passing locally | Application source |
 | Browser inference | Completed in Brave/WASM | Included 3.39 s licensed stadium clip |
@@ -23,8 +23,8 @@ An additional eight-frame offline comparison against the COCO ball category cont
 ## Reproduce the browser case
 
 1. Open the app in a current Chromium desktop browser.
-2. Select Try motion demo. Download its JSON to inspect the saved reference output.
-3. Select Analyze again. Record browser/device, model hashes, elapsed time and unresolved segments.
+2. Select Open annotated demo. Download its JSON to inspect the saved reference output.
+3. Open Analysis options and select Analyze again. Record browser/device, model hashes, elapsed time and unresolved segments.
 4. Download the newly measured JSON. Verify that its points come from model/appearance/manual provenance as labeled.
 5. Seek to 1.50 s and inspect source pixels, marker and trail. Check lost-ball intervals and confirm they remain gaps.
 6. Export an annotated video while keeping the tab visible. Decode the entire result with FFmpeg and compare frames at retained timestamps.

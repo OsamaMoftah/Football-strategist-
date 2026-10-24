@@ -1,6 +1,5 @@
 "use client";
-
-import Image from "next/image";
+import { useEffect, useRef } from "react";
 import type { AppView } from "./Header";
 interface ClipSetupProps {
   onUpload: () => void;
@@ -9,81 +8,49 @@ interface ClipSetupProps {
   demoLoading: boolean;
   onView: (view: AppView) => void;
 }
-export function ClipSetup({ onUpload, onSample, onDemo, demoLoading, onView }: ClipSetupProps) {
+export function ClipSetup({ onUpload, onSample, onDemo, demoLoading }: ClipSetupProps) {
+  const preview = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      void preview.current?.play().catch(() => {});
+  }, []);
   return (
-    <section className="wk-setup" aria-labelledby="setup-title">
-      <div className="wk-setup-copy">
-        <h1 id="setup-title">
-          Turn a clip
-          <br />
-          into a<br />
-          review plan.
-        </h1>
-        <p className="wk-lead">
-          Upload a short football clip. Inspect the footage, review key moments and choose a
-          tactical focus.
-        </p>
-        <dl className="wk-facts">
-          <div>
-            <dt>Clip limit</dt>
-            <dd>60 sec</dd>
-          </div>
-          <div>
-            <dt>Processing</dt>
-            <dd>On device</dd>
-          </div>
-        </dl>
+    <section className="film-setup" aria-labelledby="setup-title">
+      <div className="film-setup-copy">
+        <span className="film-kicker">FOOTBALL STRATEGIST</span>
+        <h1 id="setup-title">See the play.</h1>
+        <p>Follow the ball. Replay the key moments. See what to look for in your next review.</p>
         <div className="wk-actions">
-          <button className="button-primary wk-blue-button" type="button" onClick={onUpload}>
-            Choose a clip ↗
+          <button className="button-primary wk-blue-button" onClick={onDemo} disabled={demoLoading}>
+            {demoLoading ? "Opening…" : "Open annotated demo ↗"}
           </button>
-          <button
-            className="button-secondary"
-            type="button"
-            onClick={onDemo}
-            disabled={demoLoading}
-          >
-            {demoLoading ? "Loading demo…" : "Try motion demo"}
+          <button className="button-secondary" onClick={onUpload}>
+            Upload a clip
           </button>
         </div>
-        <p className="wk-file-note">MP4 or WebM · up to 200 MB · first model downloads ~63 MB</p>
-        <button className="wk-text-button wk-demo-link" type="button" onClick={onSample}>
-          Explore the synthetic pitch sample →
-        </button>
+        <p className="wk-file-note">MP4 / WebM · up to 60 seconds · processed on your device</p>
       </div>
-      <div>
-        <figure className="wk-hero-visual">
-          <Image
-            src="/images/match-attack.jpg"
-            alt="Footballers contesting a chance in a crowded penalty area"
-            width={1600}
-            height={900}
-            priority
-            sizes="(max-width: 760px) 100vw, 48vw"
-            className="wk-hero-photo"
-          />
-          <nav className="wk-codes" aria-label="Explore Football strategist">
-            <button type="button" className="wk-code wk-code-blue" onClick={onSample}>
-              Review
-            </button>
-            <button
-              type="button"
-              className="wk-code wk-code-yellow"
-              onClick={() => onView("findings")}
-            >
-              Findings
-            </button>
-            <button
-              type="button"
-              className="wk-code wk-code-red"
-              onClick={() => onView("strategies")}
-            >
-              Strategies
-            </button>
-          </nav>
-        </figure>
-        <p className="wk-photo-credit">Football photograph: Waldemar Brandt / Unsplash.</p>
-      </div>
+      <figure className="film-demo-preview">
+        <video
+          ref={preview}
+          src="/demo/annotated-preview.webm"
+          controls
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-label="Real annotated football demo preview"
+        />
+        <figcaption>
+          <span>Actual annotated output. Open the demo to inspect it.</span>
+          <a href="https://commons.wikimedia.org/wiki/File:Goal_by_Rafael_Leao.webm">
+            Saggittarius A · CC BY-SA 4.0 ↗
+          </a>
+        </figcaption>
+      </figure>
+      <button className="film-text-action film-synthetic-link" onClick={onSample}>
+        Explore the separate synthetic pitch sample →
+      </button>
     </section>
   );
 }
