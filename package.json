@@ -31,7 +31,7 @@
     "prettier": "^3.9.10",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^6"
   },
   "packageManager": "pnpm@9.15.5",
   "description": "Football clip review with browser or native processing, ball tracking and evidence-linked review cues.",
