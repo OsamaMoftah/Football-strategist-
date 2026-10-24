@@ -1,5 +1,7 @@
 "use client";
 import { formatFindingTime, summarizeFindings } from "@/lib/cv/findings";
+import { buildReviewMoments } from "@/lib/cv/review-moments";
+import { resultBallTrack } from "@/lib/cv/ball-motion";
 import { analyzeSequence } from "@/lib/cv/sequence";
 import { strategyPatterns } from "@/lib/strategy-data";
 import type { AnalysisResult } from "@/lib/cv/types";
@@ -51,8 +53,8 @@ export function AnalysisFindings({
   return (
     <section aria-label="Measured findings">
       <p className="wk-source">
-        {result.source.name} · {result.frames.length} measured samples · {result.sampleRate}{" "}
-        samples/second
+        {result.source.name} · {result.frames.length} measured samples ·{" "}
+        {result.sampleRate.toFixed(2)} samples/second
       </p>
       <div className="wk-blackboard">
         <div>
@@ -65,6 +67,28 @@ export function AnalysisFindings({
           </p>
         </div>
       </div>
+      {result.events &&
+        buildReviewMoments(sequence, resultBallTrack(result), result.events)
+          .filter((m) => m.kind === "event")
+          .map((moment) => (
+            <article className="wk-report-row" key={moment.id}>
+              <div className="wk-report-time">
+                <button onClick={() => onSeek(moment.time)}>
+                  {formatFindingTime(moment.time)} ↗
+                </button>
+              </div>
+              <div>
+                <h3>{moment.title}</h3>
+                <p>{moment.observation}</p>
+                <small>{moment.evidence}</small>
+              </div>
+              <div>
+                <p>
+                  <b>Review question:</b> {moment.question}
+                </p>
+              </div>
+            </article>
+          ))}
       {sequence.insights.map((cue) => (
         <article className="wk-report-row" key={`${cue.kind}-${cue.time}`}>
           <div className="wk-report-time">

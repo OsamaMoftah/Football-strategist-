@@ -48,3 +48,25 @@ test("an unresolved ball produces no fake moment and a single weak anchor is wit
   assert.deepEqual(buildReviewMoments(summary(), []), []);
   assert.deepEqual(buildReviewMoments(summary(), [point(0)]), []);
 });
+
+test("only reviewed events become explanations, and their provenance remains visible", () => {
+  const base = {
+    id: "e1",
+    time: 6,
+    end: 9,
+    type: "pass",
+    title: "Delivery into the area",
+    explanation: "The ball travels toward the penalty area.",
+    coachingQuestion: "Who contests the second ball?",
+    evidenceTimes: [6, 9],
+    source: "visual-review" as const,
+    reviewNote: "Implementation-agent visual review of source frames.",
+  };
+  assert.equal(
+    buildReviewMoments(summary(), [], [{ ...base, reviewStatus: "proposed" }]).length,
+    0,
+  );
+  const moments = buildReviewMoments(summary(), [], [{ ...base, reviewStatus: "accepted" }]);
+  assert.equal(moments[0].kind, "event");
+  assert.match(moments[0].evidence!, /visual review/);
+});

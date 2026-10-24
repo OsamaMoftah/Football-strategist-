@@ -159,6 +159,8 @@ export function ballAt(
       timestamp: time,
       x: previous.x + (next.x - previous.x) * amount,
       y: previous.y + (next.y - previous.y) * amount,
+      cameraX: previous.cameraX + (next.cameraX - previous.cameraX) * amount,
+      cameraY: previous.cameraY + (next.cameraY - previous.cameraY) * amount,
       confidence: Math.min(previous.confidence, next.confidence),
       source: amount < 0.001 ? previous.source : amount > 0.999 ? next.source : "interpolated",
     };

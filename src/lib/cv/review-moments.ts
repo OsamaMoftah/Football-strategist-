@@ -1,5 +1,5 @@
 import type { SequenceSummary } from "./sequence";
-import type { BallPoint } from "./types";
+import type { BallPoint, ReviewEvent } from "./types";
 
 export interface ReviewMoment {
   id: string;
@@ -9,12 +9,30 @@ export interface ReviewMoment {
   observation: string;
   evidence?: string;
   question: string;
-  kind: "cue" | "trace";
+  kind: "cue" | "trace" | "event";
   strategyId?: string;
 }
 
 /** A cue is a review hypothesis; a trace alone never becomes an invented match event. */
-export function buildReviewMoments(summary: SequenceSummary, track: BallPoint[]): ReviewMoment[] {
+export function buildReviewMoments(
+  summary: SequenceSummary,
+  track: BallPoint[],
+  events: ReviewEvent[] = [],
+): ReviewMoment[] {
+  const reviewed = events.filter(
+    (e) => (e.reviewStatus === "accepted" || e.reviewStatus === "corrected") && e.reviewNote,
+  );
+  if (reviewed.length)
+    return reviewed.map((e) => ({
+      id: e.id,
+      time: e.time,
+      end: e.end,
+      title: e.title,
+      observation: e.explanation,
+      question: e.coachingQuestion ?? "Verify the action against the footage.",
+      kind: "event",
+      evidence: `${e.source === "vlm" ? "VLM proposal, subsequently reviewed" : "Implementation-agent visual review"}. ${e.reviewNote} Source frames: ${e.evidenceTimes.map((t) => t.toFixed(2) + "s").join(", ")}.`,
+    }));
   if (summary.insights.length)
     return summary.insights.map((cue) => ({
       id: `${cue.kind}-${cue.time}`,

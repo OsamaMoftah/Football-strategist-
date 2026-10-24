@@ -340,7 +340,7 @@ export function ClipAnalysis({
       </header>
       <section className="film-player" aria-label="Real clip analysis">
         <div
-          className={`video-viewport cv-viewport film-viewport ${anchoring ? "cv-viewport--anchor" : ""}`}
+          className={`video-viewport cv-viewport film-viewport ${result?.pipelineVersion === 3 ? "film-viewport--native" : ""} ${anchoring ? "cv-viewport--anchor" : ""}`}
           onClick={(event) => {
             if (!anchoring || !result || busy) return;
             const video = videoRef.current;
@@ -496,7 +496,13 @@ export function ClipAnalysis({
                   disabled={busy || exporting}
                 >
                   <ScanLine size={14} />
-                  {busy ? "Analyzing…" : result ? "Analyze again" : "Analyze clip"}
+                  {busy
+                    ? "Analyzing…"
+                    : result?.pipelineVersion === 3
+                      ? "Run browser pass"
+                      : result
+                        ? "Analyze again"
+                        : "Analyze clip"}
                 </button>
                 {busy ? (
                   <button className="cv-tool-button" onClick={cancelAnalysis}>
@@ -573,6 +579,13 @@ export function ClipAnalysis({
             Annotated export is silent and records at playback speed. Keep this tab visible.
           </p>
         </div>
+        {result?.trackReview && (
+          <p className="film-evidence">
+            Native case · {result.trackReview.removedPoints} false-track points withheld after
+            explicit visual review. Raw observations and review notes are retained in the case
+            files.
+          </p>
+        )}
         {result && (
           <p className="film-evidence">
             {result.frames.length} player samples ·{" "}

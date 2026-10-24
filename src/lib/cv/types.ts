@@ -43,6 +43,19 @@ export interface TeamIdentity {
   color: [number, number, number];
   samples: number;
 }
+export interface ReviewEvent {
+  id: string;
+  time: number;
+  end: number;
+  type: string;
+  title: string;
+  explanation: string;
+  coachingQuestion?: string;
+  evidenceTimes: number[];
+  source: "vlm" | "visual-review";
+  reviewStatus: "proposed" | "accepted" | "corrected" | "rejected";
+  reviewNote?: string;
+}
 export interface AnalysisResult {
   schemaVersion: 1;
   source: {
@@ -64,7 +77,21 @@ export interface AnalysisResult {
     framesWithBall: number;
     totalDetections: number;
   };
-  pipelineVersion?: 2;
+  pipelineVersion?: 2 | 3;
+  events?: ReviewEvent[];
+  trackReview?: {
+    reviewer: string;
+    removedPoints: number;
+    rejectedSegments: { segment: number; note: string }[];
+  };
+  processing?: {
+    engine: string;
+    sourceSha256: string;
+    sourceFps: number;
+    framesProcessed: number;
+    playerStride: number;
+    modelHashes: Record<string, string>;
+  };
   ballModel?: string;
   ballTrack?: BallPoint[];
   ballSampleRate?: number;

@@ -22,7 +22,7 @@ export function MomentReview({
   onFindings?: () => void;
 }) {
   const moments = useMemo(
-    () => buildReviewMoments(analyzeSequence(result), resultBallTrack(result)),
+    () => buildReviewMoments(analyzeSequence(result), resultBallTrack(result), result.events),
     [result],
   );
   const [selected, setSelected] = useState<string | null>(null);
@@ -65,7 +65,11 @@ export function MomentReview({
           <article className="film-explanation">
             <div>
               <span className="film-kicker">
-                {moment.kind === "cue" ? "THE READ" : "TRACKING OBSERVATION"}
+                {moment.kind === "event"
+                  ? "REVIEWED OBSERVATION"
+                  : moment.kind === "cue"
+                    ? "THE READ"
+                    : "TRACKING OBSERVATION"}
               </span>
               <h3>{moment.title}</h3>
               <p>{moment.observation}</p>

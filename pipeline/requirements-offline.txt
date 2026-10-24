@@ -1,0 +1,4 @@
+-r requirements.txt
+opencv-python-headless==5.0.0.93
+onnxruntime==1.26.0
+scipy==1.18.1

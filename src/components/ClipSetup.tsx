@@ -1,4 +1,5 @@
 "use client";
+import { nativeDemo } from "@/lib/cv/demo";
 import { useEffect, useRef } from "react";
 import type { AppView } from "./Header";
 interface ClipSetupProps {
@@ -33,7 +34,7 @@ export function ClipSetup({ onUpload, onSample, onDemo, demoLoading }: ClipSetup
       <figure className="film-demo-preview">
         <video
           ref={preview}
-          src="/demo/annotated-preview.webm"
+          src={nativeDemo.annotated}
           controls
           muted
           loop
@@ -42,10 +43,8 @@ export function ClipSetup({ onUpload, onSample, onDemo, demoLoading }: ClipSetup
           aria-label="Real annotated football demo preview"
         />
         <figcaption>
-          <span>Actual annotated output. Open the demo to inspect it.</span>
-          <a href="https://commons.wikimedia.org/wiki/File:Goal_by_Rafael_Leao.webm">
-            Saggittarius A · CC BY-SA 4.0 ↗
-          </a>
+          <span>20-second native CV output. Open the demo to inspect it.</span>
+          <a href={nativeDemo.source}>NaBUru38 · CC BY-SA 4.0 ↗</a>
         </figcaption>
       </figure>
       <button className="film-text-action film-synthetic-link" onClick={onSample}>

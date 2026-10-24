@@ -1,0 +1,64 @@
+{
+  "sourceSha256": "0e3ae453dc8cb22097431e6923bbbf2b66725a8f2e0a80e7c5842d2f0c1d6c1b",
+  "reviewer": "Implementation-agent visual review; not an independent analyst benchmark",
+  "rejectedSegments": [
+    {
+      "segment": 5,
+      "note": "9.409\u201310.143s: follows the printed football on the lower-left advertising board; real ball is airborne elsewhere. Entire segment withheld."
+    }
+  ],
+  "events": [
+    {
+      "id": "review-1",
+      "time": 6.2,
+      "end": 9.4,
+      "type": "pass",
+      "title": "Delivery into the area",
+      "explanation": "A red-shirted player sends the ball toward the penalty area. Players in both kits converge as it arrives. The camera pan and aerial contest make the next touch difficult to attribute.",
+      "coachingQuestion": "Before the delivery, who attacks the landing zone and who covers the space outside the box?",
+      "evidenceTimes": [
+        6.006,
+        7.007,
+        9.009
+      ],
+      "source": "visual-review",
+      "reviewStatus": "accepted",
+      "reviewNote": "Implementation-agent visual review of the source sequence and sampled frames; no confirmed recipient or possession claim."
+    },
+    {
+      "id": "review-2",
+      "time": 9.4,
+      "end": 12.2,
+      "type": "pressure",
+      "title": "Prepare for the second ball",
+      "explanation": "After the crowded goalmouth contest, the ball moves out toward the near side. A white-shirted player and a red-shirted opponent chase the next touch.",
+      "coachingQuestion": "Does the team outside the first contest have a player ready for the second ball, or is that space left open?",
+      "evidenceTimes": [
+        10.01,
+        11.011,
+        12.012
+      ],
+      "source": "visual-review",
+      "reviewStatus": "accepted",
+      "reviewNote": "Implementation-agent visual review of frames around 10\u201312 seconds. The exact contact in the crowd remains unresolved."
+    },
+    {
+      "id": "review-3",
+      "time": 12.2,
+      "end": 16.5,
+      "type": "pressure",
+      "title": "Pressure near the touchline",
+      "explanation": "The white-shirted player and red-shirted opponent continue toward the near touchline. The ball stays close to their duel before another red-shirted player approaches from ahead.",
+      "coachingQuestion": "Can the player on the ball find an inside outlet before the touchline and the second opponent reduce the available space?",
+      "evidenceTimes": [
+        13.013,
+        14.014,
+        15.015,
+        16.016
+      ],
+      "source": "visual-review",
+      "reviewStatus": "accepted",
+      "reviewNote": "Implementation-agent visual review of the near-side duel. No automated possession or tactical classification is claimed."
+    }
+  ]
+}

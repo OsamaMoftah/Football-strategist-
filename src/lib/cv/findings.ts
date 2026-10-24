@@ -116,6 +116,27 @@ export function buildFindingsReport(
         : "Movement cue; no strategy is automatically classified.",
     ]),
     "",
+    ...(result.events?.length
+      ? [
+          "## Reviewed source observations",
+          ...result.events
+            .filter((e) => e.reviewStatus === "accepted" || e.reviewStatus === "corrected")
+            .flatMap((e) => [
+              `### ${formatFindingTime(e.time)}–${formatFindingTime(e.end)}: ${e.title}`,
+              e.explanation,
+              `Review question: ${e.coachingQuestion ?? "Verify against the footage."}`,
+              `Source: ${e.source}. ${e.reviewNote ?? ""}`,
+              `Evidence frames: ${e.evidenceTimes.join(", ")} seconds.`,
+            ]),
+        ]
+      : []),
+    ...(result.processing
+      ? [
+          "## Native processing provenance",
+          `Engine: ${result.processing.engine}; source SHA-256: ${result.processing.sourceSha256}; ${result.processing.framesProcessed} source frames.`,
+          "The included case uses implementation-agent visual-review notes. The local Qwen3-VL runs returned no supported events; these notes are not model-generated tactical conclusions.",
+        ]
+      : []),
     "## Strategy review",
     selectedPatterns.length
       ? `Analyst-selected lens: ${selectedPatterns.map((pattern) => pattern.name).join(", ")}.`

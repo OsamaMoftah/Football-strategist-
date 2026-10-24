@@ -1,11 +1,24 @@
 # Validation and operational readiness
 
-## Current evidence
+## Native case — 24 October 2026
+
+- 600 frames / 20.02 seconds, 1280×720, real CC BY-SA 4.0 footage by NaBUru38.
+- Native CPU inference: 242.6 seconds; 500 retained points before review (478 detector, 22 appearance).
+- Visual review excluded a 21-point false acquisition on a printed advertising football. Raw points and exclusion remain inspectable. Reviewed output: 479 points across four segments, longest 9.009s. Unresolved intervals remain gaps.
+- Ten evenly spaced source frames received an overlay-assisted implementation-agent spot check. Eight visible samples: seven within a 12-pixel tolerance, one missed; two ambiguous samples excluded. Manual labels have approximately ±3px uncertainty and are not blinded/independent truth. This is a post-development sanity check, not benchmark accuracy.
+- Qwen3-VL-4B-Instruct returned no supported events in both full-sequence and shorter-window runs. The default thinking tag also exhausted its output budget. No automatic strategy-understanding claim follows from this experiment.
+- Three coaching notes are implementation-agent visual reviews, distinct from model detections and unsuccessful VLM proposals.
+- Native MP4: H.264, 1280×720, 600 frames, 20.02s; full FFmpeg decode passed.
+- Current behavioral suites: 26 TypeScript CV tests and 15 Python tests.
+
+Artifacts: [case files and provenance](../public/demo/u17/README.md). Reproduce with [native CLI commands](NATIVE_ENGINE.md). Multi-match generalization, player-ID metrics, fully independent labels, VFR timestamps and successful event inference remain open.
+
+## Earlier browser-case evidence
 
 | Check | Result | Scope |
 | --- | --- | --- |
-| CV behavioral tests | 25 passing | Decoder, association, geometry, appearance, cut/gap handling, abstention, cue gates and recording format |
-| Python tests | 5 passing | Geometry/math helpers only |
+| CV behavioral tests | 26 passing | Decoder, association, geometry, appearance, cut/gap handling, abstention, cue gates and recording format |
+| Python tests | 15 passing | Geometry, native tracking, model preprocessing and review gates |
 | Typecheck, lint, formatting, production build | Passing locally | Application source |
 | Browser inference | Completed in Brave/WASM | Included 3.39 s licensed stadium clip |
 | Ball continuity | 1.7 s / 3.39 s, 2 segments | 14 detector anchors + 9 appearance estimates; not accuracy |
@@ -24,7 +37,7 @@ An additional eight-frame offline comparison against the COCO ball category cont
 
 1. Open the app in a current Chromium desktop browser.
 2. Select Open annotated demo. Download its JSON to inspect the saved reference output.
-3. Open Analysis options and select Analyze again. Record browser/device, model hashes, elapsed time and unresolved segments.
+3. Open Analysis options and select Run browser pass. Record browser/device, model hashes, elapsed time and unresolved segments.
 4. Download the newly measured JSON. Verify that its points come from model/appearance/manual provenance as labeled.
 5. Seek to 1.50 s and inspect source pixels, marker and trail. Check lost-ball intervals and confirm they remain gaps.
 6. Export an annotated video while keeping the tab visible. Decode the entire result with FFmpeg and compare frames at retained timestamps.

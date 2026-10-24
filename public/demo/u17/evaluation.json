@@ -1,0 +1,57 @@
+{
+  "tolerancePixels": 12,
+  "labelMethod": "Implementation-agent visual labels, 10 evenly spaced source frames (0, 60, ..., 540). Approximately +/-3 px manual uncertainty. Overlay-assisted inspection; not blinded or independent ground truth. Frames 240 and 540 marked ambiguous; held out from localization scoring. This small post-development check is not benchmark accuracy.",
+  "measurements": [
+    {
+      "frame": 0,
+      "status": "within-tolerance",
+      "errorPixels": 0.07
+    },
+    {
+      "frame": 60,
+      "status": "within-tolerance",
+      "errorPixels": 0.27
+    },
+    {
+      "frame": 120,
+      "status": "within-tolerance",
+      "errorPixels": 0.58
+    },
+    {
+      "frame": 180,
+      "status": "within-tolerance",
+      "errorPixels": 0.72
+    },
+    {
+      "frame": 240,
+      "status": "excluded-ambiguous"
+    },
+    {
+      "frame": 300,
+      "status": "missed"
+    },
+    {
+      "frame": 360,
+      "status": "within-tolerance",
+      "errorPixels": 0.42
+    },
+    {
+      "frame": 420,
+      "status": "within-tolerance",
+      "errorPixels": 0.07
+    },
+    {
+      "frame": 480,
+      "status": "within-tolerance",
+      "errorPixels": 0.98
+    },
+    {
+      "frame": 540,
+      "status": "excluded-ambiguous"
+    }
+  ],
+  "visible": 8,
+  "localized": 7,
+  "missed": 1,
+  "outsideTolerance": 0
+}

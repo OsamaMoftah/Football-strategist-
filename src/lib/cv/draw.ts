@@ -19,7 +19,7 @@ export function drawDetections(
   const s = Math.max(0.75, width / 1280);
   ctx.save();
   ctx.lineWidth = 1.5 * s;
-  for (const d of detections.filter((d) => d.label === "person")) {
+  for (const d of detections.filter((d) => d.label === "person" && d.onPitch !== false)) {
     const x = d.x * width,
       y = d.y * height,
       w = d.width * width,
@@ -76,7 +76,7 @@ export function drawAnalysis(
     for (const segment of segmentTrail(
       track.filter((point) => point.timestamp >= lastCut),
       time,
-      1.4,
+      result.pipelineVersion === 3 ? 0.65 : 1.4,
     )) {
       const points = [...segment];
       if (
@@ -89,10 +89,15 @@ export function drawAnalysis(
           source: head.source === "interpolated" ? "appearance" : head.source,
         });
       for (let i = 1; i < points.length; i++) {
-        const a = points[i - 1],
-          b = points[i],
+        const project = (p: (typeof points)[number]) => ({
+          ...p,
+          x: p.x + (result.pipelineVersion === 3 && head ? head.cameraX - p.cameraX : 0),
+          y: p.y + (result.pipelineVersion === 3 && head ? head.cameraY - p.cameraY : 0),
+        });
+        const a = project(points[i - 1]),
+          b = project(points[i]),
           age = Math.max(0, time - b.timestamp),
-          alpha = Math.max(0, 1 - age / 1.4);
+          alpha = Math.max(0, 1 - age / (result.pipelineVersion === 3 ? 0.65 : 1.4));
         ctx.globalAlpha = alpha * 0.9;
         ctx.lineWidth = (1 + alpha * 3) * s;
         ctx.strokeStyle = "#2563eb";
@@ -128,6 +133,27 @@ export function drawAnalysis(
     ctx.beginPath();
     ctx.arc(x, y, 2 * s, 0, Math.PI * 2);
     ctx.fill();
+  }
+  const event = result.events?.find(
+    (e) =>
+      (e.reviewStatus === "accepted" || e.reviewStatus === "corrected") &&
+      e.reviewNote &&
+      Math.round(time * 1000) / 1000 >= e.time &&
+      Math.round(time * 1000) / 1000 < e.end,
+  );
+  if (event) {
+    ctx.globalAlpha = 1;
+    ctx.font = `600 ${16 * s}px sans-serif`;
+    const label = `${event.source === "vlm" ? "Reviewed proposal" : "Visual review"} · ${event.title}`;
+    ctx.fillStyle = "rgba(250,250,247,.95)";
+    ctx.fillRect(
+      18 * s,
+      64 * s,
+      Math.min(width - 36 * s, ctx.measureText(label).width + 28 * s),
+      38 * s,
+    );
+    ctx.fillStyle = "#163c8c";
+    ctx.fillText(label, 30 * s, 89 * s);
   }
   ctx.restore();
 }

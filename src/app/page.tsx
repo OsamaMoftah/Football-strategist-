@@ -11,6 +11,7 @@ import { ExportModal } from "@/components/ExportModal";
 import { BenchmarksTable } from "@/components/BenchmarksTable";
 import { strategyPatterns, type StrategyCategory } from "@/lib/strategy-data";
 import type { MatchSample } from "@/lib/match-data";
+import { nativeDemo } from "@/lib/cv/demo";
 import type { AnalysisResult } from "@/lib/cv/types";
 
 export default function Home() {
@@ -96,18 +97,14 @@ export default function Home() {
     setDemoLoading(true);
     setUploadError(null);
     try {
-      const response = await fetch("/demo/leao-goal.webm", { signal: controller.signal });
+      const response = await fetch(nativeDemo.video, { signal: controller.signal });
       if (!response.ok) throw new Error("The detector demo could not load. Please retry.");
       const blob = await response.blob();
-      const saved = await fetch("/demo/leao-analysis.json", { signal: controller.signal })
+      const saved = await fetch(nativeDemo.analysis, { signal: controller.signal })
         .then((r) => (r.ok ? (r.json() as Promise<AnalysisResult>) : null))
         .catch(() => null);
       if (!controller.signal.aborted)
-        setClip(
-          new File([blob], "Leao goal · Wikimedia.webm", { type: "video/webm" }),
-          true,
-          saved,
-        );
+        setClip(new File([blob], nativeDemo.filename, { type: "video/mp4" }), true, saved);
     } catch (error) {
       if (!controller.signal.aborted)
         setUploadError(error instanceof Error ? error.message : "Demo unavailable.");
@@ -164,11 +161,7 @@ export default function Home() {
             <ClipAnalysis
               key={source.src}
               file={source.file}
-              mediaCredit={
-                source.demo
-                  ? "Goal by Rafael Leao · Saggittarius A · CC BY-SA 4.0\ncommons.wikimedia.org/?curid=131110728"
-                  : undefined
-              }
+              mediaCredit={source.demo ? nativeDemo.exportCredit : undefined}
               src={source.src}
               result={result}
               onResult={setResult}
@@ -187,13 +180,13 @@ export default function Home() {
             />
             {source.demo && (
               <p className="wk-demo-credit">
-                Motion demo · Goal by Rafael Leao, Saggittarius A /{" "}
-                <a href="https://commons.wikimedia.org/wiki/File:Goal_by_Rafael_Leao.webm">
-                  Wikimedia Commons
-                </a>{" "}
-                · <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
-                Original stadium footage with saved browser-model observations. Choose Analyze again
-                to run the engine locally. Annotated demo exports share the same license.
+                Native-engine case · <a href={nativeDemo.source}>{nativeDemo.credit}</a>. First 20
+                seconds, silent. Tracks come from Python inference; coaching notes are
+                implementation-agent visual reviews. The VLM returned no supported events.
+                <a href={nativeDemo.annotated} download>
+                  {" "}
+                  Download annotated MP4 ↗
+                </a>
               </p>
             )}
           </div>

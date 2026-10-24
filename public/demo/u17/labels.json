@@ -1,0 +1,62 @@
+{
+  "sourceSha256": "0e3ae453dc8cb22097431e6923bbbf2b66725a8f2e0a80e7c5842d2f0c1d6c1b",
+  "method": "Implementation-agent visual labels, 10 evenly spaced source frames (0, 60, ..., 540). Approximately +/-3 px manual uncertainty. Overlay-assisted inspection; not blinded or independent ground truth. Frames 240 and 540 marked ambiguous; held out from localization scoring. This small post-development check is not benchmark accuracy.",
+  "frames": [
+    {
+      "frame": 0,
+      "visibility": "visible",
+      "x": 851,
+      "y": 371
+    },
+    {
+      "frame": 60,
+      "visibility": "visible",
+      "x": 849,
+      "y": 371
+    },
+    {
+      "frame": 120,
+      "visibility": "visible",
+      "x": 908,
+      "y": 348
+    },
+    {
+      "frame": 180,
+      "visibility": "visible",
+      "x": 890,
+      "y": 340
+    },
+    {
+      "frame": 240,
+      "visibility": "ambiguous"
+    },
+    {
+      "frame": 300,
+      "visibility": "visible",
+      "x": 1120,
+      "y": 174
+    },
+    {
+      "frame": 360,
+      "visibility": "visible",
+      "x": 738,
+      "y": 435
+    },
+    {
+      "frame": 420,
+      "visibility": "visible",
+      "x": 823,
+      "y": 436
+    },
+    {
+      "frame": 480,
+      "visibility": "visible",
+      "x": 890,
+      "y": 277
+    },
+    {
+      "frame": 540,
+      "visibility": "ambiguous"
+    }
+  ]
+}

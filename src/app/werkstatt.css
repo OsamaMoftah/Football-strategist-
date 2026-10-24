@@ -2379,3 +2379,10 @@ body {
 .film-explanation:has(.film-moment-evidence) {
   row-gap: 10px;
 }
+
+/* The native case uses a landscape source; keep its full image visible without side gutters. */
+.werkstatt .film-viewport--native {
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+}

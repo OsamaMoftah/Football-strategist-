@@ -1,5 +1,13 @@
 # Architecture
 
+## Native case
+
+`pipeline.analyze_video` decodes every source frame, runs the same ONNX weights through native CPU ONNX Runtime and associates source-coordinate observations. Ball inference uses ROI/global crops at 29.97 Hz; player observations use five crops every third frame. Optical flow/RANSAC estimates camera translation and detects cuts. Hungarian matching associates player candidates; identities are short-term segments.
+
+`pipeline.propose_events` samples timestamped frames for a localhost Ollama instruction model. Raw response, sampling hashes, model digest and prompt remain separate from review records. The selected model returned no supported events on this case. `pipeline.review_analysis` applies explicit, source-hash-bound exclusions and visual-review notes without changing raw inference. `pipeline.render_video` checks the source hash and writes a silent H.264 derivative atomically. See [native CLI instructions](NATIVE_ENGINE.md).
+
+The browser viewer loads the native case's JSON and source MP4. Uploaded clips continue through the browser worker below. There is no hosted Python upload service.
+
 ## Data flow
 
 ```mermaid
@@ -22,7 +30,7 @@ flowchart LR
 
 ## Measurement versus presentation
 
-`AnalysisResult` has `schemaVersion: 1` and `pipelineVersion: 2`. Positions are normalized **source-image** coordinates. `frames` preserves sampled raw detector candidates, short-term track IDs, camera observations and appearance attributes. `ballTrack` separately records accepted centers, timestamp, segment, source (`detector`, `appearance`, `manual`), score and camera offset. Scores are not calibrated probabilities of correctness. Segments are not player identities.
+`AnalysisResult` has `schemaVersion: 1` and `pipelineVersion: 2` (browser) or `3` (native). Positions are normalized **source-image** coordinates. `frames` preserves sampled raw detector candidates, short-term track IDs, camera observations and appearance attributes. `ballTrack` separately records accepted centers, timestamp, segment, source (`detector`, `appearance`, `manual`), score and camera offset. Scores are not calibrated probabilities of correctness. Segments are not player identities.
 
 Drawing reads `video.currentTime`, scales to the fitted source rectangle, and respects device pixel ratio. A short interpolation is created for rendering only and does not masquerade as another detector measurement. Long gaps and cuts never connect into a trajectory. Annotated export calls the same drawing function as the viewer.
 
