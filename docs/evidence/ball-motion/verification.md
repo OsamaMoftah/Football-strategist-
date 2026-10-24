@@ -46,3 +46,7 @@ GitHub CI run https://github.com/OsamaMoftah/Football-strategist-/actions/runs/4
 Source commit da78dd0 passed hosted web, Python and container checks: https://github.com/OsamaMoftah/Football-strategist-/actions/runs/40093422544 . Final deployment dpl_DvTL2EwgxATXe3G7XajQ6HQgfuTE is aliased at https://football-strategist.vercel.app/ .
 
 The final public export `football-strategist-annotated.webm` decoded completely: VP9, 408×358, 84 frames. Its inspected frame shows the synchronized cobalt/yellow trace and four readable footer lines with Football strategist, estimate wording, creator, license and source URL. The generated Markdown now includes the same media credit and no preselected strategy claim. Final desktop/mobile screenshots use the renamed interface. Hugging Face configuration is prepared and the container is tested in CI; no Hugging Face Space has been provisioned or published.
+
+## Anonymous public-access gate
+
+The initial manually assigned branded alias inherited Vercel deployment authentication (anonymous HTTP 302 to SSO), although the signed-in browser worked. The new name was then attached as a verified production domain on the existing project. Final anonymous HEAD checks returned HTTP 200 for the app root, football ball model and moving demo source. This also makes the branded name follow future production deployments. Existing preview protection was preserved. Source commit fd5ce7b passed all hosted jobs before this deployment-documentation-only correction.
