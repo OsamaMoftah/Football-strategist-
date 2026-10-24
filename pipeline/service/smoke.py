@@ -2,13 +2,14 @@
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
 import time
 import urllib.request
 
-base = "http://127.0.0.1:7860/api/native"
+base = os.environ.get("FOOTBALL_SMOKE_URL", "http://127.0.0.1:7860/api/native")
 
 
 def request(path, method="GET", data=None, token=None, media="application/json"):
@@ -29,7 +30,7 @@ with tempfile.TemporaryDirectory() as directory:
             "-i",
             "public/demo/u17/source.mp4",
             "-t",
-            ".5",
+            "0.5",
             "-an",
             "-c:v",
             "libx264",
