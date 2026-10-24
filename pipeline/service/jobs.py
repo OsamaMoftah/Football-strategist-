@@ -106,6 +106,14 @@ class Jobs:
     def validate_media(self, path):
         import cv2
 
+        with path.open("rb") as stream:
+            signature = stream.read(4096)
+        mp4 = len(signature) >= 12 and signature[4:8] == b"ftyp"
+        webm = signature.startswith(b"\x1a\x45\xdf\xa3") and b"webm" in signature[:512]
+        if not (mp4 or webm):
+            raise ValueError(
+                "Upload an actual MP4 or WebM container, not a playlist or renamed file."
+            )
         capture = cv2.VideoCapture(str(path))
         try:
             fps = capture.get(cv2.CAP_PROP_FPS)

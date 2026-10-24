@@ -5,7 +5,7 @@ The Docker edition runs the web viewer and Python CV engine together. Vercel kee
 ## User flow
 
 1. Select **Native CPU server** before choosing a clip, or change the engine in **Analysis options** and choose **Run native analysis**.
-2. The interface discloses server processing before submission. Native limits are 30 seconds, 100 MB, 1920×1080 maximum pixel count and 60 FPS. Use constant-frame-rate H.264 MP4 or WebM; variable-frame-rate synchronization is not yet validated.
+2. The interface discloses server processing before submission. Container signatures are checked before decoding; playlists and renamed non-video files are rejected. Native limits are 30 seconds, 100 MB, 1920×1080 maximum pixel count and 60 FPS. Use constant-frame-rate H.264 MP4 or WebM; variable-frame-rate synchronization is not yet validated.
 3. A private job receipt is created before the bytes are sent. The viewer displays queue state and source-frame progress, with a visible cancel action.
 4. When processing completes, the browser verifies the result's SHA-256 against the exact selected file before displaying overlays. A result for another source is rejected.
 5. Source media is removed when processing completes, fails or is cancelled. The browser also deletes the server job after receiving the result. If the browser disconnects, temporary artifacts expire after approximately one hour; unstarted/interrupted uploads expire after two minutes, with a cleanup sweep every 30 seconds. A service restart removes earlier job directories because in-memory receipts no longer exist.

@@ -2,7 +2,7 @@
 
 ## Native upload service — 24 October 2026
 
-The upload service is deployed on [Hugging Face CPU Basic](https://huggingface.co/spaces/sammoftah/Football-strategist); [Vercel](https://football-strategist.vercel.app/) retains the browser engine and links to the native edition. Current behavioral suites: **31 TypeScript CV tests and 23 Python tests**. Application-code CI passed all web, Python and real-container checks at `3cdd3d8`.
+The upload service is deployed on [Hugging Face CPU Basic](https://huggingface.co/spaces/sammoftah/Football-strategist); [Vercel](https://football-strategist.vercel.app/) retains the browser engine and links to the native edition. Current behavioral suites: **31 TypeScript CV tests and 24 Python tests**. Application-code CI passed all web, Python and real-container checks at `3cdd3d8`.
 
 Verified separately:
 

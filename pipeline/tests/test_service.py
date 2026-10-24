@@ -180,3 +180,21 @@ def test_streamed_body_is_bounded_even_without_content_length(client):
     )
     assert response.status_code == 413
     assert not (jobs.root / job["id"]).exists()
+
+
+def test_playlist_disguised_as_video_is_rejected_before_decoder(tmp_path, monkeypatch):
+    import cv2
+
+    path = tmp_path / "source.mp4"
+    path.write_bytes(b"#EXTM3U\nhttp://example.invalid/private\n")
+
+    def decode(_):
+        raise AssertionError("Container signature must be checked before decoding")
+
+    monkeypatch.setattr(cv2, "VideoCapture", decode)
+    jobs = Jobs(tmp_path / "jobs")
+    try:
+        with pytest.raises(ValueError, match="MP4 or WebM"):
+            jobs.validate_media(path)
+    finally:
+        jobs.close()
